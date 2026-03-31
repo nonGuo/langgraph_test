@@ -1,328 +1,317 @@
 """
-SQL generator node for test case validation.
+SQL generator node using ReAct Agent.
 
-Uses Agent (ReAct) to generate and execute SQL for each test case.
+This module uses the LangGraph-based ReAct Agent to generate and execute
+SQL for test case validation. The agent can:
+1. Retrieve knowledge base examples
+2. Query table/column metadata
+3. Generate and execute SQL
+4. Self-correct based on execution results
+
+This matches the behavior of Dify's Agent node with ReAct strategy.
 """
 
 import json
 import logging
-from typing import Any
+from typing import Any, Optional
 
 from langchain_core.language_models import BaseChatModel
-from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 
 from state import GraphState, TestCaseItem
+from config import Config
+from tools.agent_tools import create_agent_tools
 
 logger = logging.getLogger(__name__)
-
-
-# SQL generation prompt from Dify DSL (simplified)
-SQL_GENERATION_PROMPT = """
-# Role
-你是一名资深的数据仓库测试的 SQL 专家。你的任务是为给定的测试用例生成准确、可执行的验证 SQL 脚本。
-
-# Input Context
-1. 参考范例 (Reference):
-   - 包含历史相似用例的 SQL 写法，请仔细模仿其逻辑结构
-   - {few_shot}
-
-2. 测试用例详情 (Case Detail):
-   {md_table}
-
-3. 映射逻辑 (Mappings):
-   - <表级关联> (决定 JOIN/WHERE): {table_mapping}
-   - <字段计算> (决定 SELECT): {col_mapping}
-
-4. 目标表结构 (DDL):
-   {ddl}
-
-# Workflow (必须严格遵守的执行流程)
-
-## Step 1: 策略分析 (Analyze)
-- 阅读 Context 中的参考范例，确定 SQL 风格
-- 分析测试用例详情中的 expected_result
-- 确定断言逻辑：什么情况算 PASS，什么情况算 FAIL
-
-## Step 2: 编写初版 SQL (Draft)
-- 根据 Mapping 和 DDL 编写 SQL
-- 关键规则 A (Schema): 必须检查 Context 中的 DDL 以及表级关联，确保表名严格遵循 schema.table_name 格式
-- 关键规则 B (PASS/FAIL 输出):
-  - 你的 SQL 必须包含断言逻辑，直接输出 'PASS' 或 'FAIL'
-  - 使用 CASE WHEN 结构
-
-## Step 3: 执行与诊断 (Execute & Diagnose)
-你必须调用 database_query_with_sql 工具执行你编写的 SQL，并根据工具返回的 Observation 进行决策：
-
-### 情况 A：工具返回"执行报错" (Runtime Error)
-- 这是 SQL 语法或元数据错误
-- 不要直接重试相同的 SQL
-- 必须重新阅读 Context 中的 DDL 以及 mapping，或者调用工具查询有哪些表/字段
-- 修正 SQL 语法后，再次调用 database_query_with_sql
-
-### 情况 B：工具返回"执行成功" (Execution Success)
-- SQL 语法是完全正确的
-- 无论结果是 'PASS' 还是 'FAIL'，都代表 SQL 能够正常运行
-- 严禁为了让结果变成 'PASS' 而修改 SQL 逻辑
-- 立即停止工具调用，直接进入 Step 4
-
-## Step 4: 最终输出 (Final Answer)
-仅当 Step 3 处于"情况 B"时，输出最终 JSON：
-
-Final Answer
-{{"sql": "最终验证通过的 SQL 语句"}}
-
-# Output Format
-按照以下格式回答：
-Final Answer
-{{"sql": "最终验证通过的 SQL 语句"}}
-"""
 
 
 def sql_generator_node(
     state: GraphState,
     llm: BaseChatModel,
+    config: Config = None,
     db_tool: Any = None,
     knowledge_tool: Any = None,
 ) -> GraphState:
     """
-    Generate and execute SQL for test case validation.
-    
+    Generate and execute SQL for test cases using ReAct Agent.
+
+    This node processes each test case through the ReAct Agent subgraph,
+    which implements the full ReAct loop:
+    1. Plan: Analyze test case and decide what tools to use
+    2. Act: Call tools (database query, knowledge retrieval, etc.)
+    3. Observe: Process tool outputs
+    4. Reason: Decide next action based on observations
+    5. Repeat: Continue until task is complete or max iterations
+
     Corresponds to Dify iteration subgraph:
     - 1768484069294 (code - check if SQL needed)
     - 1768484268147 (if-else - route based on need_generate_sql)
-    - 1768636785422 (LLM - extract mapping info)
     - 1769565941597 (Agent - query knowledge base for few-shot)
-    - 1769570150785 (code - extract few-shot)
-    - 1769514001390 (Agent - generate SQL)
+    - 1769514001390 (Agent - generate SQL with ReAct loop)
     - 1768658658449 (tool - execute SQL)
     - 1768484458580 (code - update test case item)
-    
-    This is a simplified version. Full implementation requires
-    iteration subgraph.
-    
+
     Args:
         state: Current graph state
-        llm: Language model for generation
+        llm: Language model for agent
+        config: Configuration object
         db_tool: Database execution tool
         knowledge_tool: Knowledge base retrieval tool
-        
+
     Returns:
-        Updated state with SQL results
+        Updated state with processed test cases
     """
+    from agents.sql_agent import run_sql_agent_for_test_case, parse_sql_from_result
+
     # Get test cases
     test_case_json = state.get("test_case", "[]")
-    
+
     try:
         test_cases = json.loads(test_case_json)
     except json.JSONDecodeError:
         logger.error("Failed to parse test cases JSON")
-        return state
-    
-    logger.info(f"Processing {len(test_cases)} test cases for SQL generation...")
-    
-    # Process each test case
+        return {
+            **state,
+            "llm_response": "错误：无法解析测试用例 JSON",
+        }
+
+    logger.info(f"Processing {len(test_cases)} test cases with ReAct Agent...")
+
+    # Create agent tools
+    tools = create_agent_tools(
+        db_tool=db_tool,
+        knowledge_tool=knowledge_tool,
+    )
+
+    if not tools:
+        logger.warning("No tools available for agent")
+        return {
+            **state,
+            "llm_response": "错误：没有可用的工具（数据库工具或知识库工具未初始化）",
+        }
+
+    # Get max iterations from config
+    max_iterations = config.max_sql_iterations if config else 5
+
+    # Process each test case through the ReAct Agent
     processed_cases = []
-    
+
     for i, case in enumerate(test_cases):
-        logger.info(f"Processing test case {i+1}/{len(test_cases)}: {case.get('case_name', 'Unknown')}")
-        
+        case_name = case.get("case_name", f"Case {i+1}")
+        logger.info(f"\n{'='*60}")
+        logger.info(f"Processing test case {i+1}/{len(test_cases)}: {case_name}")
+        logger.info(f"{'='*60}")
+
         # Check if SQL generation is needed
         need_sql = case.get("need_generate_sql", True)
-        
+
         if not need_sql:
-            logger.info("SQL generation not needed for this case")
-            case["agent_thinking"] = "无需生成 SQL，需要人工测试"
+            logger.info(f"SQL generation not needed for: {case_name}")
+            case["agent_thinking"] = "无需生成 SQL，需要人工介入测试"
             case["db_excute_result"] = "N/A"
             processed_cases.append(case)
             continue
-        
-        # Generate SQL for this test case
+
+        # Build context for the agent
+        context = _build_context_for_case(case, state)
+
+        # Run the ReAct Agent for this test case
         try:
-            result = _generate_sql_for_case(
-                case=case,
-                state=state,
+            agent_result = run_sql_agent_for_test_case(
+                test_case=case,
+                context=context,
                 llm=llm,
-                db_tool=db_tool,
-                knowledge_tool=knowledge_tool,
+                tools=tools,
+                max_iterations=max_iterations,
             )
-            
-            case["eval_step_descri"] = result.get("sql", case.get("eval_step_descri", ""))
-            case["agent_thinking"] = result.get("thinking", "")
-            case["db_excute_result"] = result.get("execution_result", "")
-            
+
+            # Extract results from agent output
+            sql_result = agent_result.get("sql_result", "")
+            agent_thinking = agent_result.get("agent_thinking", "")
+            success = agent_result.get("success", False)
+            error = agent_result.get("error")
+
+            # Parse the SQL from agent result using the helper from sql_agent
+            sql_dict = parse_sql_from_result(sql_result)
+            sql = sql_dict.get("sql", "")
+            passed = sql_dict.get("passed", None)
+            result_data = sql_dict.get("result_data", "")
+
+            # Update test case with results
+            if sql:
+                case["eval_step_descri"] = sql
+            case["agent_thinking"] = _format_agent_thinking(
+                agent_thinking, success, error
+            )
+            case["db_excute_result"] = _format_execution_result(
+                sql_result, passed, result_data, success, error
+            )
+
+            logger.info(
+                f"Agent completed for {case_name}: "
+                f"success={success}, iterations={agent_result.get('iteration_count', 'N/A')}"
+            )
+
         except Exception as e:
-            logger.exception(f"SQL generation failed for case {case.get('case_name')}")
-            case["agent_thinking"] = f"SQL 生成失败：{str(e)}"
+            logger.exception(f"Agent execution failed for {case_name}")
+            case["agent_thinking"] = f"Agent 执行失败：{str(e)}"
             case["db_excute_result"] = "ERROR"
-        
+
         processed_cases.append(case)
-    
+
     # Update state with processed test cases
     new_test_case_json = json.dumps(processed_cases, ensure_ascii=False)
-    
+
+    # Generate summary message
+    summary = _generate_summary(processed_cases)
+
     return {
         **state,
         "test_case": new_test_case_json,
         "new_test_case": new_test_case_json,
+        "llm_response": summary,
     }
 
 
-def _generate_sql_for_case(
+def _build_context_for_case(
     case: TestCaseItem,
     state: GraphState,
-    llm: BaseChatModel,
-    db_tool: Any = None,
-    knowledge_tool: Any = None,
 ) -> dict[str, str]:
     """
-    Generate SQL for a single test case.
-    
+    Build context information for a test case.
+
     Args:
         case: Test case dictionary
         state: Graph state
-        llm: Language model
-        db_tool: Database tool
-        knowledge_tool: Knowledge tool
-        
+
     Returns:
-        Dictionary with sql, thinking, and execution_result
+        Context dictionary with DDL, mapping, etc.
     """
-    # Gather context
-    few_shot = ""
-    if knowledge_tool:
-        try:
-            few_shot = knowledge_tool.retrieve_few_shot(case)
-        except Exception as e:
-            logger.warning(f"Knowledge retrieval failed: {e}")
-            few_shot = "未找到可参考的业务逻辑或 SQL"
-    
-    table_mapping = state.get("table_mapping_useful_info", "")
-    col_mapping = state.get("col_table_mapping_useful_info", "")
-    ddl = state.get("DDL", "")
-    
-    # Format test case as markdown table
-    md_table = _format_case_as_markdown(case)
-    
-    # Build prompt
-    prompt_text = SQL_GENERATION_PROMPT.format(
-        few_shot=few_shot[:1000] if few_shot else "无",
-        md_table=md_table,
-        table_mapping=table_mapping[:1000] if table_mapping else "无",
-        col_mapping=col_mapping[:1000] if col_mapping else "无",
-        ddl=ddl[:1000] if ddl else "无",
-    )
-    
-    # Call LLM (simplified - without full ReAct loop)
-    messages = [
-        SystemMessage(
-            content="你是一名资深的数据仓库测试的 SQL 专家，擅长生成 GAUSS DB 验证 SQL。"
-        ),
-        HumanMessage(content=prompt_text),
-    ]
-    
-    response = llm.invoke(messages)
-    response_text = response.content
-    
-    # Extract SQL from response
-    sql = _extract_sql_from_response(response_text)
-    
-    # Execute SQL if db_tool available
-    execution_result = ""
-    if sql and db_tool:
-        try:
-            result = db_tool.execute_query(sql)
-            if result.success:
-                execution_result = str(result.data)
-            else:
-                execution_result = f"执行错误：{result.error}"
-        except Exception as e:
-            execution_result = f"执行异常：{str(e)}"
-    
     return {
-        "sql": sql,
-        "thinking": response_text[:500],  # Truncate for state
-        "execution_result": execution_result,
+        "ddl": state.get("DDL", ""),
+        "table_mapping": state.get("mapping_table1", ""),
+        "col_mapping": state.get("mapping_table2", ""),
+        "rs": state.get("RS", ""),
+        "case_name": case.get("case_name", ""),
+        "tags": case.get("tags", ""),
     }
 
 
-def _extract_sql_from_response(response: str) -> str:
+def _format_agent_thinking(
+    agent_thinking: str,
+    success: bool,
+    error: Optional[str],
+) -> str:
     """
-    Extract SQL from LLM response.
-    
-    Args:
-        response: LLM response text
-        
-    Returns:
-        Extracted SQL string
-    """
-    import re
-    
-    # Try to find JSON with sql key
-    pattern = r'\{\s*"sql"\s*:\s*"([^"]+)"\s*\}'
-    matches = re.findall(pattern, response)
-    
-    if matches:
-        return matches[0]
-    
-    # Try to find SQL code block
-    pattern = r"```sql\s*(.*?)\s*```"
-    matches = re.findall(pattern, response, re.DOTALL | re.IGNORECASE)
-    
-    if matches:
-        return matches[0]
-    
-    # Try to find any SQL-like content (SELECT ... FROM)
-    pattern = r"(SELECT\s+.*?;)"
-    matches = re.findall(pattern, response, re.DOTALL | re.IGNORECASE)
-    
-    if matches:
-        return matches[0]
-    
-    # Return empty if nothing found
-    logger.warning("No SQL found in response")
-    return ""
+    Format agent thinking for display.
 
-
-def _format_case_as_markdown(case: TestCaseItem) -> str:
-    """
-    Format test case as markdown table.
-    
     Args:
-        case: Test case dictionary
-        
+        agent_thinking: Raw agent output
+        success: Whether agent succeeded
+        error: Error message if any
+
     Returns:
-        Markdown table string
+        Formatted thinking string
     """
-    headers = ["Key", "Value"]
-    lines = [
-        "| Key | Value |",
-        "|---|---|",
-    ]
-    
-    for key, value in case.items():
-        if value:
-            safe_value = str(value).replace("|", "\\|").replace("\n", "<br>")
-            lines.append(f"| {key} | {safe_value} |")
-    
+    lines = []
+
+    if not success:
+        lines.append(f"⚠️ 状态：部分成功（{error or '未知错误'}）")
+    else:
+        lines.append("✅ 状态：成功")
+
+    # Truncate long thinking
+    if len(agent_thinking) > 1000:
+        lines.append(f"\n📝 思考过程 (摘要):\n{agent_thinking[:500]}...\n...{agent_thinking[-500:]}")
+    else:
+        lines.append(f"\n📝 思考过程:\n{agent_thinking}")
+
     return "\n".join(lines)
 
 
-def should_generate_sql_router(state: GraphState, item: dict) -> str:
+def _format_execution_result(
+    sql_result: str,
+    passed: Optional[bool],
+    result_data: str,
+    success: bool,
+    error: Optional[str],
+) -> str:
     """
-    Route based on whether SQL generation is needed.
-    
-    Conditional edge for iteration subgraph.
-    
+    Format SQL execution result for display.
+
     Args:
-        state: Graph state
-        item: Current test case item
-        
+        sql_result: Raw agent output
+        passed: Whether test passed
+        result_data: Result data string
+        success: Whether agent succeeded
+        error: Error message if any
+
     Returns:
-        Next node name
+        Formatted result string
     """
-    need_sql = item.get("need_generate_sql", True)
-    
-    if need_sql:
-        return "generate_sql"
+    lines = []
+
+    # Status indicator
+    if passed is True:
+        lines.append("✅ 测试通过 (PASS)")
+    elif passed is False:
+        lines.append("❌ 测试失败 (FAIL)")
+    elif not success:
+        lines.append(f"⚠️ 执行异常：{error or '未知错误'}")
     else:
-        return "skip_sql_generation"
+        lines.append("❓ 测试结果未知")
+
+    # Add result data (truncated)
+    if result_data and len(result_data) > 500:
+        lines.append(f"\n📊 执行结果 (摘要):\n{result_data[:500]}...")
+    elif result_data:
+        lines.append(f"\n📊 执行结果:\n{result_data}")
+
+    return "\n".join(lines)
+
+
+def _generate_summary(processed_cases: list[dict[str, Any]]) -> str:
+    """
+    Generate summary of SQL generation results.
+
+    Args:
+        processed_cases: List of processed test cases
+
+    Returns:
+        Summary string for user
+    """
+    total = len(processed_cases)
+    need_sql_count = sum(
+        1 for c in processed_cases if c.get("need_generate_sql", True)
+    )
+    skip_count = total - need_sql_count
+
+    # Count pass/fail
+    pass_count = sum(
+        1 for c in processed_cases
+        if c.get("db_excute_result", "").startswith("✅ 测试通过")
+    )
+    fail_count = sum(
+        1 for c in processed_cases
+        if c.get("db_excute_result", "").startswith("❌ 测试失败")
+    )
+    error_count = sum(
+        1 for c in processed_cases
+        if c.get("db_excute_result", "").startswith("⚠️ 执行异常")
+        or c.get("db_excute_result", "") == "ERROR"
+    )
+
+    summary_lines = [
+        "### SQL 生成完成",
+        "",
+        f"📊 统计信息:",
+        f"  - 总测试用例数：{total}",
+        f"  - 需要生成 SQL: {need_sql_count}",
+        f"  - 人工介入 (跳过): {skip_count}",
+        f"  - 测试通过：{pass_count}",
+        f"  - 测试失败：{fail_count}",
+        f"  - 执行异常：{error_count}",
+        "",
+        "✅ 所有测试用例的 SQL 已生成并执行完毕。",
+    ]
+
+    return "\n".join(summary_lines)

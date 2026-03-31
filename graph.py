@@ -132,28 +132,39 @@ class AI4TestGraph:
         # Knowledge retrieval
         builder.add_node("retrieve_knowledge", self._retrieve_knowledge_node)
         
-        # Mind map generation
+        # Mind map generation (using ReAct Agent)
         builder.add_node(
             "generate_mind_map",
             lambda state: mind_map_generator_node(
-                state, self.llm, agent_tools=None
+                state,
+                self.llm,
+                messaging_tool=self.messaging_tool,
+                max_iterations=self.config.max_sql_iterations if self.config else 3,
             ),
         )
         
         # Chat/guidance response
         builder.add_node("handle_chat_guidance", send_chat_response_node)
         
-        # Test case generation
+        # Test case generation (using ReAct Agent)
         builder.add_node(
             "generate_test_cases",
-            lambda state: test_case_generator_node(state, self.llm),
+            lambda state: test_case_generator_node(
+                state,
+                self.llm,
+                max_iterations=self.config.max_sql_iterations if self.config else 3,
+            ),
         )
         
-        # SQL generation (simplified - full version needs subgraph)
+        # SQL generation (using ReAct Agent subgraph)
         builder.add_node(
             "generate_sql",
             lambda state: sql_generator_node(
-                state, self.llm, self.db_tool, self.knowledge_tool
+                state=state,
+                llm=self.llm,
+                config=self.config,
+                db_tool=self.db_tool,
+                knowledge_tool=self.knowledge_tool,
             ),
         )
         
