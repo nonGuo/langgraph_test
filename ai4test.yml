@@ -1,0 +1,3417 @@
+app:
+  description: 根据mapping，DDL，生成测试用例
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: AI辅助测试用例生成
+  use_icon_as_answer_icon: false
+dependencies:
+current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: langgenius/openai_api_compatible:0.0.26@2b66cafd2edd384e45e633a601a8bc315abf71fe39f6e6d9c9d80a80ee8f34c2
+    version: null
+current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: langgenius/tongyi:0.1.3@08f25a10c0617a3512fac091a0f0d894925357e965efe40fdf95cb48e09b62d1
+    version: null
+kind: app
+version: 0.5.0
+workflow:
+  conversation_variables:
+description: 用户w3账号
+    id: 777214a6-15ab-41a4-bb8c-42245fd72647
+    name: user_w3_id
+    selector:
+conversation
+user_w3_id
+    value: ''
+    value_type: string
+description: 用户提供的DDL建表语句
+    id: 2cdc3805-05fc-479d-b425-f572f762ce3d
+    name: DDL
+    selector:
+conversation
+DDL
+    value: ''
+    value_type: string
+description: RS文档中提取的测试要点
+    id: 29dd34c0-25df-4233-8012-7477132a71a8
+    name: RS
+    selector:
+conversation
+RS
+    value: ''
+    value_type: string
+description: 提取的属性级mapping
+    id: 36a466a2-7958-4664-a401-2c18fdf02b67
+    name: mapping_table2
+    selector:
+conversation
+mapping_table2
+    value: ''
+    value_type: string
+description: 提取的实体级mapping
+    id: 4c8db524-8068-455c-8990-47e3a89f3a26
+    name: mapping_table1
+    selector:
+conversation
+mapping_table1
+    value: ''
+    value_type: string
+description: LLM生成的测试用例描述
+    id: 50393af6-87e5-4317-b7fa-456cbb2139d0
+    name: test_case
+    selector:
+conversation
+test_case
+    value: ''
+    value_type: string
+description: LLM生成的测试用例脑图
+    id: a5e3e997-d86f-4c8d-a969-b7a955181fc1
+    name: test_case_naotu
+    selector:
+conversation
+test_case_naotu
+    value: ''
+    value_type: string
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+.JPG
+.JPEG
+.PNG
+.GIF
+.WEBP
+.SVG
+      allowed_file_types:
+document
+      allowed_file_upload_methods:
+remote_url
+local_file
+      enabled: true
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+local_file
+remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+data:
+        isInLoop: false
+        sourceType: document-extractor
+        targetType: code
+      id: 1768449734777-source-1768449749100-target
+      source: '1768449734777'
+      sourceHandle: source
+      target: '1768449749100'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: llm-source-1768450006075-target
+      source: llm
+      sourceHandle: source
+      target: '1768450006075'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: code
+        targetType: if-else
+      id: 1768450006075-source-1768450056719-target
+      source: '1768450006075'
+      sourceHandle: source
+      target: '1768450056719'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1768450056719-false-1768450122619-target
+      selected: false
+      source: '1768450056719'
+      sourceHandle: 'false'
+      target: '1768450122619'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 1768450122619-source-answer-target
+      source: '1768450122619'
+      sourceHandle: source
+      target: answer
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: document-extractor
+        targetType: code
+      id: 1768463945748-source-1768465208003-target
+      source: '1768463945748'
+      sourceHandle: source
+      target: '1768465208003'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1768450056719-true-1768450122619-target
+      source: '1768450056719'
+      sourceHandle: 'true'
+      target: '1768450122619'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: code
+        targetType: if-else
+      id: 1768465208003-source-1768479835816-target
+      source: '1768465208003'
+      sourceHandle: source
+      target: '1768479835816'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1768479835816-true-1768479918871-target
+      source: '1768479835816'
+      sourceHandle: 'true'
+      target: '1768479918871'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: llm
+        targetType: variable-aggregator
+      id: 1768479918871-source-1768480079086-target
+      selected: false
+      source: '1768479918871'
+      sourceHandle: source
+      target: '1768480079086'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: code
+        targetType: variable-aggregator
+      id: 1768465208003-source-1768480079086-target
+      source: '1768465208003'
+      sourceHandle: source
+      target: '1768480079086'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: 1768450056719-17316f8d-8a17-4924-9d01-dec52ffc5eea-1768480181455-target
+      source: '1768450056719'
+      sourceHandle: 17316f8d-8a17-4924-9d01-dec52ffc5eea
+      target: '1768480181455'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: code
+        targetType: iteration
+      id: 1768483278749-source-1768483057445-target
+      source: '1768483278749'
+      sourceHandle: source
+      target: '1768483057445'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        sourceType: iteration-start
+        targetType: code
+      id: 1768483057445start-source-1768484069294-target
+      source: 1768483057445start
+      sourceHandle: source
+      target: '1768484069294'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        sourceType: code
+        targetType: if-else
+      id: 1768484069294-source-1768484268147-target
+      source: '1768484069294'
+      sourceHandle: source
+      target: '1768484268147'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+data:
+        isInLoop: false
+        sourceType: answer
+        targetType: document-extractor
+      id: 1768449717151-source-1768449734777-target
+      selected: false
+      source: '1768449717151'
+      sourceHandle: source
+      target: '1768449734777'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: variable-aggregator
+      id: 1768479835816-false-1768480079086-target
+      selected: false
+      source: '1768479835816'
+      sourceHandle: 'false'
+      target: '1768480079086'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: agent
+      id: 1768480181455-source-1768538766043-target
+      source: '1768480181455'
+      sourceHandle: source
+      target: '1768538766043'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: agent
+        targetType: answer
+      id: 1768538766043-source-1768538931156-target
+      source: '1768538766043'
+      sourceHandle: source
+      target: '1768538931156'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: answer
+        targetType: assigner
+      id: 1768538931156-source-1768539081186-target
+      source: '1768538931156'
+      sourceHandle: source
+      target: '1768539081186'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: answer
+        targetType: assigner
+      id: 1768539771147-source-1768539764964-target
+      source: '1768539771147'
+      sourceHandle: source
+      target: '1768539764964'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: variable-aggregator
+        targetType: assigner
+      id: 1768480079086-source-1768555128233-target
+      source: '1768480079086'
+      sourceHandle: source
+      target: '1768555128233'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: assigner
+        targetType: llm
+      id: 1768555128233-source-llm-target
+      source: '1768555128233'
+      sourceHandle: source
+      target: llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: assigner
+      id: 1768449749100-source-1768555162153-target
+      source: '1768449749100'
+      sourceHandle: source
+      target: '1768555162153'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: agent
+        targetType: code
+      id: 1768539572937-source-1768555668465-target
+      source: '1768539572937'
+      sourceHandle: source
+      target: '1768555668465'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: answer
+      id: 1768555668465-source-1768539771147-target
+      source: '1768555668465'
+      sourceHandle: source
+      target: '1768539771147'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        sourceType: if-else
+        targetType: code
+      id: 1768484268147-false-1768553077824-target
+      selected: false
+      source: '1768484268147'
+      sourceHandle: 'false'
+      target: '1768553077824'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        sourceType: if-else
+        targetType: code
+      id: 1768484268147-true-1768568230355-target
+      source: '1768484268147'
+      sourceHandle: 'true'
+      target: '1768568230355'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: llm
+      id: 1768438689128-source-1768634135961-target
+      source: '1768438689128'
+      sourceHandle: source
+      target: '1768634135961'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: 1768634135961-source-1768634665621-target
+      source: '1768634135961'
+      sourceHandle: source
+      target: '1768634665621'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: if-else
+      id: 1768634665621-source-1768634714409-target
+      source: '1768634665621'
+      sourceHandle: source
+      target: '1768634714409'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: 1768634714409-true-1768480181455-target
+      selected: false
+      source: '1768634714409'
+      sourceHandle: 'true'
+      target: '1768480181455'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: agent
+      id: 1768634714409-a2eebe00-83ff-420a-b769-0623d6d223e9-1768539572937-target
+      selected: false
+      source: '1768634714409'
+      sourceHandle: a2eebe00-83ff-420a-b769-0623d6d223e9
+      target: '1768539572937'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        sourceType: llm
+        targetType: code
+      id: 1768636785422-source-1768637266263-target
+      source: '1768636785422'
+      sourceHandle: source
+      target: '1768637266263'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        sourceType: code
+        targetType: answer
+      id: 1768637266263-source-1768637837489-target
+      source: '1768637266263'
+      sourceHandle: source
+      target: '1768637837489'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: iteration
+        targetType: code
+      id: 1768483057445-source-1768658381557-target
+      source: '1768483057445'
+      sourceHandle: source
+      target: '1768658381557'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: code
+        targetType: http-request
+      id: 1768658381557-source-1768483862919-target
+      source: '1768658381557'
+      sourceHandle: source
+      target: '1768483862919'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: http-request
+        targetType: tool
+      id: 1768483862919-source-1768710190090-target
+      source: '1768483862919'
+      sourceHandle: source
+      target: '1768710190090'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: answer
+      id: 1768710190090-source-1768452178608-target
+      source: '1768710190090'
+      sourceHandle: source
+      target: '1768452178608'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: assigner
+        targetType: llm
+      id: 1768710291775-source-llm-target
+      source: '1768710291775'
+      sourceHandle: source
+      target: llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        sourceType: answer
+        targetType: code
+      id: 1768552189121-source-1768484458580-target
+      source: '1768552189121'
+      sourceHandle: source
+      target: '1768484458580'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        sourceType: code
+        targetType: tool
+      id: 1768553077824-source-1768658658449-target
+      source: '1768553077824'
+      sourceHandle: source
+      target: '1768658658449'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        sourceType: answer
+        targetType: agent
+      id: 1768637837489-source-1769514001390-target
+      source: '1768637837489'
+      sourceHandle: source
+      target: '1769514001390'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        sourceType: agent
+        targetType: code
+      id: 1769514001390-source-1768553077824-target
+      source: '1769514001390'
+      sourceHandle: source
+      target: '1768553077824'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        sourceType: tool
+        targetType: answer
+      id: 1768658658449-source-1768552189121-target
+      source: '1768658658449'
+      sourceHandle: source
+      target: '1768552189121'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+data:
+        isInLoop: false
+        sourceType: assigner
+        targetType: code
+      id: 1768539764964-source-1768483278749-target
+      selected: false
+      source: '1768539764964'
+      sourceHandle: source
+      target: '1768483278749'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1768634714409-8c6c39e1-2462-4788-838e-ce49e2cfda3d-1768450122619-target
+      source: '1768634714409'
+      sourceHandle: 8c6c39e1-2462-4788-838e-ce49e2cfda3d
+      target: '1768450122619'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1768634714409-false-1768450122619-target
+      source: '1768634714409'
+      sourceHandle: 'false'
+      target: '1768450122619'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: answer
+      id: 1768634714409-9eaab42d-33fd-425d-a9a8-5f9a3d3b06ee-1768449717151-target
+      selected: false
+      source: '1768634714409'
+      sourceHandle: 9eaab42d-33fd-425d-a9a8-5f9a3d3b06ee
+      target: '1768449717151'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        sourceType: code
+        targetType: agent
+      id: 1768568230355-source-1769565941597-target
+      source: '1768568230355'
+      sourceHandle: source
+      target: '1769565941597'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        sourceType: agent
+        targetType: code
+      id: 1769565941597-source-1769570150785-target
+      source: '1769565941597'
+      sourceHandle: source
+      target: '1769570150785'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        sourceType: code
+        targetType: llm
+      id: 1769570150785-source-1768636785422-target
+      source: '1769570150785'
+      sourceHandle: source
+      target: '1768636785422'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: answer
+        targetType: if-else
+      id: 1768449717151-source-1774228896483-target
+      source: '1768449717151'
+      sourceHandle: source
+      target: '1774228896483'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: document-extractor
+      id: 1774228896483-true-1768463945748-target
+      source: '1774228896483'
+      sourceHandle: 'true'
+      target: '1768463945748'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: assigner
+      id: 1774228896483-false-1774229422570-target
+      source: '1774228896483'
+      sourceHandle: 'false'
+      target: '1774229422570'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: assigner
+        targetType: llm
+      id: 1774229422570-source-llm-target
+      source: '1774229422570'
+      sourceHandle: source
+      target: llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: answer
+        targetType: document-extractor
+      id: 1768449717151-source-1774230090685-target
+      source: '1768449717151'
+      sourceHandle: source
+      target: '1774230090685'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: document-extractor
+        targetType: llm
+      id: 1774230090685-source-1774230120418-target
+      source: '1774230090685'
+      sourceHandle: source
+      target: '1774230120418'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: llm
+        targetType: llm
+      id: 1774230120418-source-llm-target
+      source: '1774230120418'
+      sourceHandle: source
+      target: llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+data:
+        isInLoop: false
+        sourceType: assigner
+        targetType: assigner
+      id: 1768555162153-source-1768710291775-target
+      source: '1768555162153'
+      sourceHandle: source
+      target: '1768710291775'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+data:
+        selected: false
+        title: 用户输入
+        type: start
+        variables:
+allowed_file_extensions: []
+          allowed_file_types:
+document
+          allowed_file_upload_methods:
+local_file
+remote_url
+          default: ''
+          hint: ''
+          label: mapping
+          max_length: 480000
+          options: []
+          placeholder: ''
+          required: true
+          type: file
+          variable: mapping
+allowed_file_extensions: []
+          allowed_file_types:
+document
+          allowed_file_upload_methods:
+local_file
+remote_url
+          default: ''
+          hint: ''
+          label: RS
+          max_length: 48
+          options: []
+          placeholder: ''
+          required: false
+          type: file
+          variable: RS
+allowed_file_extensions: []
+          allowed_file_types:
+document
+          allowed_file_upload_methods:
+local_file
+remote_url
+          default: ''
+          hint: ''
+          label: TS
+          max_length: 48
+          options: []
+          placeholder: ''
+          required: true
+          type: file
+          variable: TS
+default: ''
+          hint: ''
+          label: w3账号_用于接收任务完成消息提醒（如q00797588）
+          max_length: 256
+          options: []
+          placeholder: ''
+          required: true
+          type: text-input
+          variable: w3_id
+      height: 185
+      id: '1768438689128'
+      position:
+        x: 0
+        y: 205
+      positionAbsolute:
+        x: 0
+        y: 205
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+data:
+        context:
+          enabled: false
+          variable_selector: []
+        memory:
+          query_prompt_template: '{{#sys.query#}}nn            {{#sys.files#}}'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 10
+        model:
+          completion_params:
+            temperature: 0
+          mode: chat
+          name: privacy_Qwen3-Coder-480B-A35B-ReAct
+          provider: langgenius/openai_api_compatible/openai_api_compatible
+        prompt_template:
+id: fc3f965b-a849-4a91-9fae-8459efa17d8e
+          role: system
+          text: "# Role\n你是一个智能意图分类器，负责将用户在数仓测试用例生成助手中的输入归类到三个特定的类别中。\n\n# Context\
+            \ Data\n\n## Mapping文档内容:\n {{#1768449749100.table_1#}} \n\n## RS文档内容:\
+            \ \n{{#conversation.RS#}} \n\n## TS文档内容：\n{{#1774230120418.text#}} \n\n\
+            ## 用户当前输入\n {{#sys.query#}}\n\n# Classification Rules\n请严格按照以下优先级逻辑进行分类：\n\
+            \n*Class 2 (开始任务/执行):\n- 用户表达了生成测试用例的意图（或直接上传了文件）。\n- 关键约束：必须检测到\
+            \ Mapping文档 已存在内容（即 Context Data 中对应变量不为空或不涉及）。\n- 只有在“意图为生成”且“材料齐全”时，才属于此类。\n\
+            \nClass 1 (闲聊/引导/缺失材料)*:\n- 包含纯闲聊（“你好”、“你会干什么”）。\n- 包含咨询类问题（“什么是分布键”、“格式要求是什么”）。\n\
+包含材料缺失的情况：用户请求生成测试用例，但 Mapping文档 （即 Context Data 中任意一项为空）。此时需要归为此类，以便引导用户上传。\n\
+            \n# Output\n仅输出JSON字符串，不要包含Markdown标记（如```json）：\n{\"class_reason\": \"\
+            简述归类的依据，特别是文件缺失情况\", \"class_type\": 1/2}"
+        selected: false
+        title: 意图识别
+        type: llm
+        vision:
+          enabled: false
+      height: 86
+      id: llm
+      position:
+        x: 4264
+        y: 879
+      positionAbsolute:
+        x: 4264
+        y: 879
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        answer: '{{#1768450122619.text#}}'
+        selected: false
+        title: 结束
+        type: answer
+        variables: []
+      height: 101
+      id: answer
+      position:
+        x: 10948
+        y: 580
+      positionAbsolute:
+        x: 10948
+        y: 580
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        answer: '
+
+          正在解析并处理输入文档...
+
+          '
+        selected: false
+        title: 提示-文档处理
+        type: answer
+        variables: []
+      height: 98
+      id: '1768449717151'
+      position:
+        x: 1388
+        y: 703
+      positionAbsolute:
+        x: 1388
+        y: 703
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        is_array_file: false
+        selected: false
+        title: mapping文档解析
+        type: document-extractor
+        variable_selector:
+'1768438689128'
+mapping
+      height: 103
+      id: '1768449734777'
+      position:
+        x: 1750
+        y: 676
+      positionAbsolute:
+        x: 1750
+        y: 676
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        code: "import re\n\n\ndef split_markdown_tables(s):\n    # 匹配以'|'开头的多行表格，用(?:\\\
+.\\n)+可以匹配多行\n    pattern = re.compile(r'(?:\\|.\\n)+')\n    tables =\
+          \ pattern.findall(s)\n    # 去除每组首位空行（不是必要的，看实际情况）\n    tables = [table.strip()\
+          \ for table in tables]\n    # 去除长度太短的\n    tables = [table for table in\
+          \ tables if table.count('|') > 4]\n    return tables\n\n\ndef main(tobe_split_text:\
+          \ str):\n    tables_list = split_markdown_tables(str(tobe_split_text))\n\
+          \    if len(tables_list) >= 2:\n        return {\n            \"table_1\"\
+          : tables_list[0],\n            \"table_2\": tables_list[1]\n        }\n\
+          \    elif len(tables_list) == 1:\n        return {\n            \"table_1\"\
+          : tables_list[0],\n            \"table_2\": ''\n        }\n    else:\n \
+          \       return {\n            \"table_1\": '',\n            \"table_2\"\
+          : ''\n        }"
+        code_language: python3
+        default_value:
+key: table_1
+          type: string
+          value: ''''''
+key: table_2
+          type: string
+          value: ''''''
+        error_strategy: default-value
+        outputs:
+          table_1:
+            children: null
+            type: string
+          table_2:
+            children: null
+            type: string
+        selected: false
+        title: 格式化mapping文件
+        type: code
+        variables:
+value_selector:
+'1768449734777'
+text
+          value_type: string
+          variable: tobe_split_text
+      height: 86
+      id: '1768449749100'
+      position:
+        x: 3198
+        y: 684
+      positionAbsolute:
+        x: 3198
+        y: 684
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        code: "import json\n\ndef main(class_info: str):\n    class_info = json.loads(class_info)\n\
+          \n    return {\n        \"class_type\": str(class_info.get('class_type',\
+          \ '3'))\n    }\n"
+        code_language: python3
+        default_value:
+key: class_type
+          type: string
+          value: ''
+        error_strategy: default-value
+        outputs:
+          class_type:
+            children: null
+            type: string
+        selected: false
+        title: 提取分类
+        type: code
+        variables:
+value_selector:
+llm
+text
+          value_type: string
+          variable: class_info
+      height: 86
+      id: '1768450006075'
+      position:
+        x: 4626
+        y: 715
+      positionAbsolute:
+        x: 4626
+        y: 715
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        cases:
+case_id: 'true'
+          conditions:
+comparison_operator: is
+            id: d3628a4f-4295-4fca-ad02-5c069fbd2551
+            value: '1'
+            varType: string
+            variable_selector:
+'1768450006075'
+class_type
+          id: 'true'
+          logical_operator: and
+case_id: 17316f8d-8a17-4924-9d01-dec52ffc5eea
+          conditions:
+comparison_operator: is
+            id: cd801d61-f76e-45f4-839e-c7c2f542275a
+            value: '2'
+            varType: string
+            variable_selector:
+'1768450006075'
+class_type
+          id: 17316f8d-8a17-4924-9d01-dec52ffc5eea
+          logical_operator: and
+        selected: false
+        title: 条件分支
+        type: if-else
+      height: 170
+      id: '1768450056719'
+      position:
+        x: 10244
+        y: 673
+      positionAbsolute:
+        x: 10244
+        y: 673
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        context:
+          enabled: false
+          variable_selector: []
+        memory:
+          query_prompt_template: ''
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0
+          mode: chat
+          name: privacy_Qwen3-Coder-480B-A35B-ReAct
+          provider: langgenius/openai_api_compatible/openai_api_compatible
+        prompt_template:
+id: bd07a0b9-7aec-4490-a5b6-6872d18920a7
+          role: system
+          text: '# Role
+
+            你是一名专业的数仓测试用例生成助手。nn            # Input Context
+User Query: {{#sys.query#}}
+Classification Reason: {{#llm.text#}}
+
+            (该原因来自上游分类器，解释了为什么用户请求被路由到这里，通常是因为缺少必要文件或仅仅是闲聊)nn            # Task
+
+            请根据 Classification Reason 的内容，动态决定回复策略：nn            策略 A：缺料引导 (当 Reason 提及缺少文件/文档时)
+既然上游分类器指出缺少文件，请礼貌地告知用户。
+明确指出还需要补充什么文件（Mapping文档 或 RS文档）才能开始生成任务。
+话术示例：“为了为您生成测试用例，我还需要您上传 [缺失的文件名]。请补充上传后，我们即可开始。”nn            策略 B：知识问答与闲聊 (当 Reason 未提及缺少文件)
+如果用户是在询问业务知识（如“什么是分布键”、“测试规范是什么”），请根据你的专业知识解答。
+如果用户只是打招呼（如“你好”），请简短介绍自己，并告诉用户你可以通过分析 Mapping 和 RS 文档来自动生成数仓测试用例。nn            # Constraints
+不需要尝试生成测试用例，因为条件不具备。
+保持语气专业、亲切。
+直接输出回复内容给用户。'
+        selected: false
+        title: 非任务式LLM
+        type: llm
+        vision:
+          enabled: false
+      height: 86
+      id: '1768450122619'
+      position:
+        x: 10606
+        y: 587
+      positionAbsolute:
+        x: 10606
+        y: 587
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        answer: '{{#1768483862919.body#}}'
+        selected: false
+        title: 直接回复 3
+        type: answer
+        variables: []
+      height: 101
+      id: '1768452178608'
+      position:
+        x: 10244
+        y: 285
+      positionAbsolute:
+        x: 10244
+        y: 285
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        is_array_file: false
+        selected: false
+        title: RS文档解析
+        type: document-extractor
+        variable_selector:
+'1768438689128'
+RS
+      height: 103
+      id: '1768463945748'
+      position:
+        x: 2112
+        y: 931
+      positionAbsolute:
+        x: 2112
+        y: 931
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        code: "\nimport re\n\n\ndef main(doc_string: str):\n    start_keyword = \"\
+          测试要点\"\n    # 假设下一个章节通常以数字开头，如 2.1.2...\n    pattern = r\"测试要点(.?)(?=\\\
+          n\\s\\d+\\.\\d+| \\n\\s*[A-Z]|$)\"\n    match = re.search(pattern, doc_string,\
+          \ re.DOTALL)\n    if match:\n        #return {\"section_content\": match.group(1).strip()}\n\
+          \        return {\"section_content\": \"\"}\n    else:\n        return {\"\
+          section_content\": \"\"}\n"
+        code_language: python3
+        default_value:
+key: section_content
+          type: string
+          value: ''
+        error_strategy: default-value
+        outputs:
+          section_content:
+            children: null
+            type: string
+        selected: false
+        title: 提取测试要点
+        type: code
+        variables:
+value_selector:
+'1768463945748'
+text
+          value_type: string
+          variable: doc_string
+      height: 86
+      id: '1768465208003'
+      position:
+        x: 2474
+        y: 947
+      positionAbsolute:
+        x: 2474
+        y: 947
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        cases:
+case_id: 'true'
+          conditions:
+comparison_operator: empty
+            id: 3bef89df-9641-421d-bc4a-7cc874a6e8ab
+            value: ''
+            varType: string
+            variable_selector:
+'1768465208003'
+section_content
+          id: 'true'
+          logical_operator: and
+        selected: false
+        title: 代码是否成功提取测试要点
+        type: if-else
+      height: 122
+      id: '1768479835816'
+      position:
+        x: 2836
+        y: 832
+      positionAbsolute:
+        x: 2836
+        y: 832
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        context:
+          enabled: false
+          variable_selector: []
+        memory:
+          query_prompt_template: '{{#sys.query#}}nn            {{#sys.files#}}'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0
+          mode: chat
+          name: privacy_DeepSeek-v3.1-w8a8-Instruct
+          provider: langgenius/openai_api_compatible/openai_api_compatible
+        prompt_template:
+id: 170455ec-097b-4340-8fea-c4f4927ca37d
+          role: system
+          text: '你是一个文档分析师。请阅读以下文档片段，根据整个RS内容来提取合适的测试要点：
+
+            1.考虑本次需求的修改点，针对性地生成本次需求重点需要测试的要点。
+
+            2.提取''测试要点''章节的内容（章节内模板测试要点不要一股脑全提取出来，要根据本次需求的修改内容来提取有用的测试要点。但是对于明显是人工写的测试要点要全量提取出来）。
+
+            3.DQ（数据质量检查，一般是质量六性）类的有专门的检查平台，不要提取该部分内容作为测试要点。nn            文档内容：{{#1768463945748.text#}}nn            注意，仅输出测试要点内容即可，不要输出任何其他字符。'
+        selected: false
+        title: LLM兜底提取测试要点
+        type: llm
+        vision:
+          enabled: false
+      height: 86
+      id: '1768479918871'
+      position:
+        x: 3198
+        y: 837
+      positionAbsolute:
+        x: 3198
+        y: 837
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        advanced_settings:
+          group_enabled: false
+          groups:
+groupId: 3c224b79-37b7-4bcd-a6dd-84fdfb350c54
+            group_name: Group1
+            output_type: string
+            variables:
+- '1768479918871'
+text
+- '1768465208003'
+section_content
+        output_type: string
+        selected: false
+        title: 变量聚合器
+        type: variable-aggregator
+        variables:
+- '1768479918871'
+text
+- '1768465208003'
+section_content
+      height: 134
+      id: '1768480079086'
+      position:
+        x: 3560
+        y: 847
+      positionAbsolute:
+        x: 3560
+        y: 847
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        dataset_ids:
+3YNXhWifKwSrIIBisBx1nokIGbDbm7vzkKZ0s00t6y6EaakRGJggH0Dh9RYuIwv3
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: gte-rerank
+            provider: langgenius/tongyi/tongyi
+          score_threshold: null
+          top_k: 3
+        query_variable_selector:
+'1768438689128'
+sys.query
+        retrieval_mode: multiple
+        selected: false
+        title: 知识检索-测试用例规范
+        type: knowledge-retrieval
+      height: 88
+      id: '1768480181455'
+      position:
+        x: 10606
+        y: 49
+      positionAbsolute:
+        x: 10606
+        y: 49
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        error_handle_mode: remove-abnormal-output
+        flatten_output: false
+        height: 411
+        is_parallel: false
+        iterator_input_type: array[object]
+        iterator_selector:
+'1768483278749'
+test_case_list
+        output_selector:
+'1768484458580'
+item
+        output_type: array[object]
+        parallel_nums: 3
+        selected: false
+        start_node_id: 1768483057445start
+        title: 迭代
+        type: iteration
+        width: 6020
+      height: 411
+      id: '1768483057445'
+      position:
+        x: 3098
+        y: 130
+      positionAbsolute:
+        x: 3098
+        y: 130
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 6020
+      zIndex: 1
+data:
+        desc: ''
+        isInIteration: true
+        selected: false
+        title: ''
+        type: iteration-start
+      draggable: false
+      height: 48
+      id: 1768483057445start
+      parentId: '1768483057445'
+      position:
+        x: 60
+        y: 203
+      positionAbsolute:
+        x: 3158
+        y: 333
+      selectable: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-iteration-start
+      width: 44
+      zIndex: 1002
+data:
+        code: "\nimport json\nimport re\n\ndef extract_json_from_text(text):\n   \
+          \ # 匹配第一个 [ 与最后一个 ] 之间的内容（包括[]本身）\n    match = re.search(r'\\[(.)\\]',\
+          \ text, re.DOTALL)\n    if match:\n        json_str = '[' + match.group(1)\
+          \ + ']'\n        return json.loads(json_str)\n    else:\n        raise ValueError(\"\
+          未找到有效的 JSON 列表格式内容！\")\n\n\ndef main(test_case_list: str):\n    test_case_list\
+          \ = extract_json_from_text(test_case_list)\n    return {\n        \"test_case_list\"\
+          : test_case_list\n    }\n"
+        code_language: python3
+        outputs:
+          test_case_list:
+            children: null
+            type: array[object]
+        selected: false
+        title: 提取测试用例-list
+        type: code
+        variables:
+value_selector:
+conversation
+test_case
+          value_type: string
+          variable: test_case_list
+      height: 50
+      id: '1768483278749'
+      position:
+        x: 2756
+        y: 310
+      positionAbsolute:
+        x: 2756
+        y: 310
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+id: key-value-27
+            key: ''
+            type: text
+            value: '{"test_cases": {{#1768658381557.new_test_case#}}}'
+          type: json
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: HTTP-生成excel
+        type: http-request
+        url: http://10.31.169.36:9002/generate_excel
+        variables: []
+      height: 136
+      id: '1768483862919'
+      position:
+        x: 9560
+        y: 267
+      positionAbsolute:
+        x: 9560
+        y: 267
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        code: "\ndef main(item: str):\n    need_generate_sql = item.get('need_generate_sql',\
+          \ True)\n    return {\n        \"need_generate_sql\": need_generate_sql\n\
+          \    }\n"
+        code_language: python3
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        outputs:
+          need_generate_sql:
+            children: null
+            type: boolean
+        selected: false
+        title: 判断测试用例是否需要生成SQL
+        type: code
+        variables:
+value_selector:
+'1768483057445'
+item
+          value_type: object
+          variable: item
+      height: 50
+      id: '1768484069294'
+      parentId: '1768483057445'
+      position:
+        x: 184
+        y: 201
+      positionAbsolute:
+        x: 3282
+        y: 331
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+      zIndex: 1002
+data:
+        cases:
+case_id: 'true'
+          conditions:
+comparison_operator: is
+            id: 9c02d75b-9b20-44ca-958e-a88105dc70d4
+            value: true
+            varType: boolean
+            variable_selector:
+'1768484069294'
+need_generate_sql
+          id: 'true'
+          logical_operator: and
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        selected: false
+        title: 判断是否需要写测试SQL
+        type: if-else
+      height: 122
+      id: '1768484268147'
+      parentId: '1768483057445'
+      position:
+        x: 506
+        y: 165
+      positionAbsolute:
+        x: 3604
+        y: 295
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+      zIndex: 1002
+data:
+        code: "\ndef main(sql: str, item: dict, agent_thinking: str, db_excute_result:\
+          \ str):\n    item['eval_step_descri'] = str(sql)\n    item['agent_thinking']\
+          \ = str(agent_thinking)\n    item['db_excute_result'] = str(db_excute_result)\n\
+          \    return {\n        \"item\": item\n    }\n"
+        code_language: python3
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        outputs:
+          item:
+            children: null
+            type: object
+        selected: false
+        title: 替换测试用例sql
+        type: code
+        variables:
+value_selector:
+'1768553077824'
+sql
+          value_type: string
+          variable: sql
+value_selector:
+'1768483057445'
+item
+          value_type: object
+          variable: item
+value_selector:
+'1769514001390'
+text
+          value_type: string
+          variable: agent_thinking
+value_selector:
+'1768658658449'
+query_result
+          value_type: string
+          variable: db_excute_result
+      height: 50
+      id: '1768484458580'
+      parentId: '1768483057445'
+      position:
+        x: 4088
+        y: 195
+      positionAbsolute:
+        x: 7186
+        y: 325
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+      zIndex: 1002
+data:
+        agent_parameters:
+          instruction:
+            type: constant
+            value: "# Role\n你是一名资深的数据仓库测试专家。\n\n# Task\n根据提供的Mapping文档、表属性、提取的RS测试要点以及常见测试用例，规划生成符合用例规范的测试用例列表。\n\
+              \n# Context\n1. Mapping逻辑: \n1.1. <表级mapping>：定义了SQL中的来源表（FROM/JOIN部分）。\n\
+              \   - 关注“取数规则关联&限定条件”，以此确定JOIN逻辑和WHERE过滤条件。\n   内容：{{#1768449749100.table_1#}}\n\
+              1.2. <字段级mapping>：定义了SELECT部分的目标字段计算逻辑。\n   - 直接复制：直接引用来源表的字段（格式：别名.字段名）。\n\
+              \   - 赋值：使用常数或字面量（需注意数据类型）。\n   - 数据加工：根据“映射表达式”中的逻辑，结合多个字段或函数进行计算。\n\
+              \  内容：{{#1768449749100.table_2#}}\n2. 表属性及本次变更内容：{{#1774230120418.text#}}\n\
+测试用例设计规范: {{#1768480181455.result#}}\n4.必须包含的测试用例，如果为空或不涉及则忽略：{{#conversation.RS#}}\n\
+常见测试用例示例: \nIT用例表视图检查{schema.table/view name}目标表/视图及临时表存在检查\n\
+              IT用例表视图检查{schema.table/view name}验证整表有数\nIT用例表视图检查{schema.table/view\
+              \ name}验证表倾斜率<0.1\nIT用例表视图检查{schema.table/view name}业务主键invoice_id唯一性检查\n\
+              IT用例表视图检查{schema.table/view name}目标表与源主表的记录数一致\nIT用例表视图检查{schema.table/view\
+              \ name}来源表权限检查\nIT用例表视图检查{schema.table/view name}_IT主键invoice_line_id唯一性检查\n\
+              可选-IT用例表视图检查{schema.table/view name}验证数据落到正确的分区\n可选-IT用例表视图检查{schema.table/view\
+              \ name}验证按YYYYMM跨年数据跑数正确\n可选-IT用例表视图检查{schema.table/view name}验证按YYYYMM分区是未扩展\n\
+              可选-IT用例表视图检查{schema.table/view name}字段检查发票寄送方式名称验证枚举值有效性\n可选-IT用例字段检查{schema.table/view\
+              \ name}验证字段枚举值关联正确性\nIT用例字段检查_{schema.table/view name}DEBIT MEMO\
+              \ 合同号验证上游字段最长值不超过XX\nIT用例字段检查_{schema.table/view name}DEBIT MEMO 合同号字段数据类型&长度&精度正确性与源一致\n\
+              IT用例字段检查{schema.table/view name}验证所有字段有值率>0\n可选-IT用例字段检查{schema.table/view\
+              \ name}开票客户编码验证字段排除兜底场景有值率>0.9\nIT用例字段检查{schema.table/view name}组织ID的数据字段值与源数据一致\n\
+              IT用例字段检查{schema.table/view name}组织ID字段有数且和来源空值率一致\nIT用例字段检查{schema.table/view\
+              \ name}税率KEY、税率KEY1验证字段类型长度与设计一致\nIT用例字段检查{schema.table/view name}_SS_ID赋值类字段空值率为0\n\
+              可选-IT用例字段检查{schema.table/view name}_P_FLAG验证全表有数字段值域与设计一致\n可选-IT用例字段检查{schema.table/view\
+              \ name}合同KEY查验证code转key成功率>0.9\nIT用例字段检查{schema.table/view name}字段(字段名相同)数据类型&长度与上游一致\n\
+              可选-业务用例业务逻辑检查{schema.table/view name}验证金额rmb与USD倍数在6~8\n可选-业务用例业务逻辑检查{schema.table/view\
+              \ name}验证交易币 RMB,USD空值率与一致\n可选-业务用例业务逻辑检查{schema.table/view name}验证下游消费表关联率>=0.95\n\
+              配置调度配置{schema.table/view name}验证LTS任务配置与设计一致\n配置调度配置{schema.table/view\
+              \ name}验证LTS  DQ任务配置与设计一致\n配置调度配置{schema.table/view name}验证LTS 任务执行时长<30min\n\
+              \n# Requirements\n1.禁止幻觉产生不存在的事实（比如绝对禁止想构造主键唯一性测试用例时, 当你能获取到的输入信息中无法获取主键信息时，尽量避免生成主键唯一性的测试用例，如果一定要生成请说明无法获取主键信息需要人工介入，避免产生幻觉）；\n\
+              2.常用测试用例是以往需求的总结出来的汇总的常用测试用例，并不代表当前需求适合使用，请结合当前需求仔细分析选择或者自己生成；\n3.构造测试用例时应分清楚需求是优化类（优化或者新增字段或者修改字段类型等）或者新增类（完全是新建的表/视图资产）需求。一般对于优化类需求构造测试用例时主要针对改动点进行专项构造测试用例即可，不要做全局的扫描！！！。而对于新增类需求，则需要做更全面的测试用例构造（常见测试用例中的六性通用的IT测试用例基本都需要覆盖）；\n\
+              4.生成的测试用例脑图必须遵从\"测试用例设计规范\"中定义的规范；\n5.请输出一个mermaid格式的脑图（作为脑图草稿），包含以下类别的测试（类别1必须包含，其他类别结合实际需求判断是否涉及，涉及则归纳输出，不涉及则舍弃）。优先确保context4所描述的\"\
+              必须包含的测试用例\"包含在内，然后从context5的”常见测试用例示例“选择与本次需求最相关（且核心）的测试用例作为补充，使得最终生成的测试用例不要超过20个：\n\
+              5.1.用户指定的测试要点: 主要是必须包含的测试用例部分。\n5.2. 基础一致性（非必选，可不输出）: xxx。\n\
+              5.3. 字段级逻辑（非必选，可不输出）: xxx。\n5.4. 数据质量（非必选，可不输出）: xxx。\n5.5.\
+              \ 性能相关（非必选，可不输出）: xxx。\n5.6. 业务相关（非必选，可不输出）: xxx\n6. L3的测试用例禁止出现模糊的表达，比如禁止写\
+              \ 验证xxx正确/不正确、影响/不受影响等。应该定义具体的指标，比如在验证转维成功率时，不要说 验证xxx字段正确，应该说验证xxx字段转维成功率100%（不确定时则写x%），这只是一个例子，请根据实际的测试用例来定义具体描述。\n\
+              \n# Output Format\n## 以下是生成的测试要点的脑图\n\ngraph LR\n    %% 定义根节点\n\
+              \    root(\"A表/视图,B表/视图,C表/视图等所有涉及的要验证的目标对象，可能有多个<br/>测试用例脑图\")\n\n\
+              \    %% 第一层级节点\n    L1_1(\"用户指定的测试要点\")\n    ...\n    root --> L1_1\n\
+              \    ...\n    L3_1_1(\"[IT用例/业务用例/配置调度][条件/操作（表视图检查、字段检查、业务逻辑检查、配置等）][对象英文名]_[预期结果]\"\
+              )\n    ...\n    style root fill:#f9f,stroke:#333,stroke-width:2px,color:black\n\
+              \    style L1_1 fill:#bbf,stroke:#333,color:black\n    style L1_2 fill:#bbf,stroke:#333,color:black\n\
+              \    style L1_3 fill:#bbf,stroke:#333,color:black\n    style L1_4 fill:#bbf,stroke:#333,color:black\n\
+              \    style L1_5 fill:#bbf,stroke:#333,color:black\n\n## 解释\nxxx\n\
+              \n注意生成的脑图最后一层（一般是L3层，根据实际情况）需要是测试用例的详细描述（可以是一个或者多个的分支描述, 需要完整描述不要用等来省略内容，因为后续步骤会丢弃一些背景信息，如果你不在L3层级描述完整，后续完全无法根据你生成的脑图来进一步写SQL做验证。涉及验证的字段/表/视图必须明确标出，除非是全表字段验证类的可以不列出。注意命名需要满足\"\
+              测试用例设计规范\"中定义的测试用例命名规范，对象需要带上schema）。"
+          maximum_iterations:
+            type: constant
+            value: 10
+          model:
+            type: constant
+            value:
+              completion_params:
+                temperature: 0
+              mode: chat
+              model: privacy_DeepSeek-v3.1-w8a8-Instruct-Long
+              model_type: llm
+              provider: langgenius/openai_api_compatible/openai_api_compatible
+              type: model-selector
+          query:
+            type: constant
+            value: '{{#sys.query#}}'
+          tools:
+            type: constant
+            value:
+enabled: true
+              extra:
+                description: 运行一段代码并返回结果。当您使用较低质量的模型时，请确保有一些提示帮助 LLM 理解如何编写代码。
+              parameters:
+                code:
+                  auto: 1
+                  value: null
+                language:
+                  auto: 1
+                  value: null
+              provider_name: code
+              provider_show_name: code
+              schemas:
+auto_generate: null
+                default: null
+                form: llm
+                human_description:
+                  en_US: The programming language of the code
+                  ja_JP: The programming language of the code
+                  pt_BR: A linguagem de programação do código
+                  zh_Hans: 代码的编程语言
+                label:
+                  en_US: Language
+                  ja_JP: Language
+                  pt_BR: Idioma
+                  zh_Hans: 语言
+                llm_description: language of the code, only "python3" and "javascript"
+                  are supported
+                max: null
+                min: null
+                name: language
+                options:
+icon: null
+                  label:
+                    en_US: Python3
+                    ja_JP: Python3
+                    pt_BR: Python3
+                    zh_Hans: Python3
+                  value: python3
+icon: null
+                  label:
+                    en_US: JavaScript
+                    ja_JP: JavaScript
+                    pt_BR: JavaScript
+                    zh_Hans: JavaScript
+                  value: javascript
+                placeholder: null
+                precision: null
+                required: true
+                scope: null
+                template: null
+                type: string
+auto_generate: null
+                default: null
+                form: llm
+                human_description:
+                  en_US: The code to be executed
+                  ja_JP: The code to be executed
+                  pt_BR: O código a ser executado
+                  zh_Hans: 要执行的代码
+                label:
+                  en_US: Code
+                  ja_JP: Code
+                  pt_BR: Código
+                  zh_Hans: 代码
+                llm_description: code to be executed, only native packages are allowed,
+                  network/IO operations are disabled.
+                max: null
+                min: null
+                name: code
+                options: []
+                placeholder: null
+                precision: null
+                required: true
+                scope: null
+                template: null
+                type: string
+              settings: {}
+              tool_description: 运行一段代码并返回结果。当您使用较低质量的模型时，请确保有一些提示帮助 LLM 理解如何编写代码。
+              tool_label: 代码解释器
+              tool_name: simple_code
+              type: builtin
+enabled: true
+              extra:
+                description: 访问数据库执行GAUSS SQL,根据提供的SQL，到数据库执行并返回查询结果。
+              parameters:
+                query_sql:
+                  auto: 1
+                  value: null
+              provider_name: 49e3e195-ee19-4b1f-87cd-d740b47e71a7
+              provider_show_name: 访问数据库执行SQL
+              schemas:
+auto_generate: null
+                default: ''
+                form: llm
+                human_description:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                label:
+                  en_US: query_sql
+                  ja_JP: query_sql
+                  pt_BR: query_sql
+                  zh_Hans: query_sql
+                llm_description: ''
+                max: null
+                min: null
+                name: query_sql
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: true
+                scope: null
+                template: null
+                type: string
+              settings: {}
+              tool_description: 访问数据库执行GAUSS SQL,根据提供的SQL，到数据库执行并返回查询结果。
+              tool_label: 访问数据库执行SQL
+              tool_name: database_query_with_sql
+              type: workflow
+        agent_strategy_label: ReAct
+        agent_strategy_name: ReAct
+        agent_strategy_provider_name: langgenius/agent/agent
+        memory:
+          query_prompt_template: '{{#sys.query#}}nn            {{#sys.files#}}'
+          window:
+            enabled: false
+            size: 50
+        meta:
+          minimum_dify_version: 1.7.0
+          version: 0.0.2
+        output_schema: {}
+        plugin_unique_identifier: langgenius/agent:0.0.30@ee903be127aef6ad9d7c80c571f804edfdb3e32beef269275cae35e31dd31dac
+        selected: true
+        title: Agent-规划脑图
+        tool_node_version: '2'
+        type: agent
+      height: 186
+      id: '1768538766043'
+      position:
+        x: 10948
+        y: 0
+      positionAbsolute:
+        x: 10948
+        y: 0
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        answer: '{{#1768538766043.text#}}nn          请问该测试用例脑图生成是否正确？如果需要修改请直接告诉我，无需修改请回复“确认脑图正确，生成测试用例*”。'
+        selected: false
+        title: 与用户交互
+        type: answer
+        variables: []
+      height: 149
+      id: '1768538931156'
+      position:
+        x: 11290
+        y: 19
+      positionAbsolute:
+        x: 11290
+        y: 19
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        items:
+input_type: variable
+          operation: over-write
+          value:
+'1768538766043'
+text
+          variable_selector:
+conversation
+test_case_naotu
+          write_mode: over-write
+        selected: false
+        title: 保存测试用例脑图
+        type: assigner
+        version: '2'
+      height: 82
+      id: '1768539081186'
+      position:
+        x: 11632
+        y: 52
+      positionAbsolute:
+        x: 11632
+        y: 52
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        agent_parameters:
+          instruction:
+            type: constant
+            value: "# Role\n你是一名自动化测试脚本编写专家。\n\n# Task\n将用户确认的测试计划转换为结构化的JSON数据，用于生成最终Excel。\n\
+              \n# 测试计划（脑图，如果用户给了脑图则忽略这里给出的脑图，以用户给出的脑图优先）\n{{#conversation.test_case_naotu#}}\n\
+              \n# Instructions\n1. 遍历确认后的测试计划。\n3. 填充等级 (level1-4)，核心业务逻辑为 level1。\n\
+填充标签 (IT用例_表视图, 业务用例等)。\n5. 如果用户query中给出了脑图则优先使用用户给出的脑图，否则使用 '测试计划'中的脑图。\n\
+              \n# Output Format (JSON List)\n[\n  {\n    \"case_name\": \"目标表主键不重复校验\"\
+              ,\n    \"level\": \"level1\",\n    \"pre_condition\": \"源表任务已完成，目标表任务已完成\"\
+              ,\n    \"need_generate_sql\": True/False,  # bool类型，是否需要生成SQL去数据库自动化验证，还是必须人工介入测试。比如\"\
+              验证变更前后数据内容一致性\"，数据库肯定只有一种状态，这种明显需要人工介入测试的。再比如\"验证查询耗时\"，这种生成一个SQL无法直接验证，需要人工手动执行SQL并计时。还有更多其他无法直接通过你生成的SQL直接得到验证结果的场景，请你按照实际测试用例分析。\n\
+              \    \"eval_step_descri\": \"测试步骤流程描述，需要对下一步生成SQL有指导作用\"\n    \"expected_result\"\
+              : \"查询结果为空，无重复主键\",\n    \"tags\": \"IT用例表视图/业务用例/配置调度配置\"\n  },\n\
+              \  ...\n]"
+          maximum_iterations:
+            type: constant
+            value: 3
+          model:
+            type: constant
+            value:
+              completion_params:
+                temperature: 0
+              mode: chat
+              model: privacy_DeepSeek-v3.1-w8a8-Instruct-Long
+              model_type: llm
+              provider: langgenius/openai_api_compatible/openai_api_compatible
+              type: model-selector
+          query:
+            type: constant
+            value: '{{#sys.query#}}'
+          tools:
+            type: constant
+            value:
+enabled: true
+              extra:
+                description: 发送消息，支持发送welink消息，Outlook邮件等
+              parameters:
+                content:
+                  auto: 1
+                  value: null
+                receiver:
+                  auto: 1
+                  value: null
+              provider_name: 56c5d311-7872-49d1-88d0-475d6fe20e55
+              provider_show_name: send_msg
+              schemas:
+auto_generate: null
+                default: ''
+                form: llm
+                human_description:
+                  en_US: 要发送的消息内容
+                  ja_JP: 要发送的消息内容
+                  pt_BR: 要发送的消息内容
+                  zh_Hans: 要发送的消息内容
+                label:
+                  en_US: content
+                  ja_JP: content
+                  pt_BR: content
+                  zh_Hans: content
+                llm_description: 要发送的消息内容
+                max: null
+                min: null
+                name: content
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: true
+                scope: null
+                template: null
+                type: string
+auto_generate: null
+                default: ''
+                form: llm
+                human_description:
+                  en_US: 消息接收人工号，例如q00797588，数字最前面的字母代表姓氏首字母（小写）
+                  ja_JP: 消息接收人工号，例如q00797588，数字最前面的字母代表姓氏首字母（小写）
+                  pt_BR: 消息接收人工号，例如q00797588，数字最前面的字母代表姓氏首字母（小写）
+                  zh_Hans: 消息接收人工号，例如q00797588，数字最前面的字母代表姓氏首字母（小写）
+                label:
+                  en_US: receiver
+                  ja_JP: receiver
+                  pt_BR: receiver
+                  zh_Hans: receiver
+                llm_description: 消息接收人工号，例如q00797588，数字最前面的字母代表姓氏首字母（小写）
+                max: null
+                min: null
+                name: receiver
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: true
+                scope: null
+                template: null
+                type: string
+              settings: {}
+              tool_description: 发送消息，支持发送welink消息，Outlook邮件等
+              tool_label: send_msg
+              tool_name: send_msg
+              type: workflow
+        agent_strategy_label: ReAct
+        agent_strategy_name: ReAct
+        agent_strategy_provider_name: langgenius/agent/agent
+        memory:
+          query_prompt_template: '{{#sys.query#}}nn            {{#sys.files#}}'
+          window:
+            enabled: false
+            size: 50
+        meta:
+          minimum_dify_version: 1.7.0
+          version: 0.0.2
+        output_schema: {}
+        plugin_unique_identifier: langgenius/agent:0.0.30@ee903be127aef6ad9d7c80c571f804edfdb3e32beef269275cae35e31dd31dac
+        selected: false
+        title: Agent-生成测试用例
+        tool_node_version: '2'
+        type: agent
+      height: 186
+      id: '1768539572937'
+      position:
+        x: 1388
+        y: 242
+      positionAbsolute:
+        x: 1388
+        y: 242
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        items:
+input_type: variable
+          operation: over-write
+          value:
+'1768539572937'
+text
+          variable_selector:
+conversation
+test_case
+          write_mode: over-write
+        selected: false
+        title: 保存测试用例
+        type: assigner
+        version: '2'
+      height: 82
+      id: '1768539764964'
+      position:
+        x: 2414
+        y: 294
+      positionAbsolute:
+        x: 2414
+        y: 294
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        answer: '{{#1768539572937.text#}}nn          {{#1768555668465.md_output#}}nn          当前测试用例生成已完成，正在为您链接数据库生成每个测试用例对应的SQL，该过程耗时较长，您可暂时离开，任务完成后将会通过welink发送消息推送给您（请确认输入参数中的w3_id正确填写了您的w3账号）。'
+        selected: false
+        title: 与用户确认测试用例
+        type: answer
+        variables: []
+      height: 215
+      id: '1768539771147'
+      position:
+        x: 2072
+        y: 219
+      positionAbsolute:
+        x: 2072
+        y: 219
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        answer: "\n### Agent生成的SQL: \n\n{{#1768553077824.sql#}}\n\n\n###\
+          \ 测试脚本SQL执行结果:\n\n{{#1768658658449.text#}}\n\n"
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        selected: false
+        title: 输出Agent处理过程
+        type: answer
+        variables: []
+      height: 151
+      id: '1768552189121'
+      parentId: '1768483057445'
+      position:
+        x: 3766
+        y: 144
+      positionAbsolute:
+        x: 6864
+        y: 274
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+      zIndex: 1002
+data:
+        code: "\nimport json\nimport re\n\n\ndef extract_json_from_text(text):\n \
+          \   # 1. 预处理\n    if not isinstance(text, str):\n        text = str(text)\n\
+          \n    # 2. 清洗 Markdown 代码块标记\n    text_clean = re.sub(r'^\\s*', '',\
+          \ text, flags=re.MULTILINE)\n    text_clean = re.sub(r'^\\s*', '', text_clean,\
+          \ flags=re.MULTILINE)\n    text_clean = re.sub(r'$', '', text_clean,\
+          \ flags=re.MULTILINE)\n    text_clean = text_clean.strip()\n    \n    #\
+          \ 3. 尝试直接解析\n    try:\n        return json.loads(text_clean)\n    except\
+          \ json.JSONDecodeError:\n        pass\n\n    # 4. 提取最后一个 { 与最后一个 } 之间的内容\n\
+          \    last_lbrace = text.rfind('{')\n    last_rbrace = text.rfind('}')\n\
+          \    if last_lbrace != -1 and last_rbrace != -1 and last_lbrace < last_rbrace:\n\
+          \        json_str = text[last_lbrace:last_rbrace+1]\n        try:\n    \
+          \        return json.loads(json_str)\n        except json.JSONDecodeError:\n\
+          \            pass\n\n    # 5. 提取最后一个sql ... 代码块内容\n    sql_blocks\
+          \ = re.findall(r'sql\\s*([\\s\\S]?)', text, re.IGNORECASE)\n    if\
+          \ sql_blocks:\n        return sql_blocks[-1].strip()\n\n    # 6. 没有返回空字典\n\
+          \    return {}\n\n\ndef main(sql: str, item: dict, need_generate_sql: bool):\n\
+          \    if need_generate_sql:\n        sql_dict = extract_json_from_text(sql)\n\
+          \        sql = sql_dict.get('sql') if sql_dict.get('sql') else sql\n   \
+          \ else:\n        sql = item.get('eval_step_descri', '')\n    return {\n\
+          \        \"sql\": sql\n    }\n"
+        code_language: python3
+        default_value:
+key: sql
+          type: string
+          value: ''''''
+        error_strategy: default-value
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        outputs:
+          sql:
+            children: null
+            type: string
+        selected: false
+        title: 提取SQL
+        type: code
+        variables:
+value_selector:
+'1769514001390'
+text
+          value_type: string
+          variable: sql
+value_selector:
+'1768483057445'
+item
+          value_type: object
+          variable: item
+value_selector:
+'1768484069294'
+need_generate_sql
+          value_type: boolean
+          variable: need_generate_sql
+      height: 86
+      id: '1768553077824'
+      parentId: '1768483057445'
+      position:
+        x: 3122
+        y: 177
+      positionAbsolute:
+        x: 6220
+        y: 307
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+      zIndex: 1002
+data:
+        items:
+input_type: variable
+          operation: over-write
+          value:
+'1768480079086'
+output
+          variable_selector:
+conversation
+RS
+          write_mode: over-write
+        selected: false
+        title: 变量赋值-测试要点
+        type: assigner
+        version: '2'
+      height: 82
+      id: '1768555128233'
+      position:
+        x: 3902
+        y: 872
+      positionAbsolute:
+        x: 3902
+        y: 872
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        items:
+input_type: variable
+          operation: over-write
+          value:
+'1768449749100'
+table_2
+          variable_selector:
+conversation
+mapping_table2
+          write_mode: over-write
+input_type: variable
+          operation: over-write
+          value:
+'1768449749100'
+table_1
+          variable_selector:
+conversation
+mapping_table1
+          write_mode: over-write
+        selected: false
+        title: 变量赋值-mapping
+        type: assigner
+        version: '2'
+      height: 108
+      id: '1768555162153'
+      position:
+        x: 3540
+        y: 673
+      positionAbsolute:
+        x: 3540
+        y: 673
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        code: "\n\nimport json\nimport re\n\ndef extract_json_from_text(text):\n \
+          \   # 匹配第一个 [ 与最后一个 ] 之间的内容（包括[]本身）\n    match = re.search(r'\\[(.)\\]',\
+          \ text, re.DOTALL)\n    if match:\n        json_str = '[' + match.group(1)\
+          \ + ']'\n        return json.loads(json_str)\n    else:\n        raise ValueError(\"\
+          未找到有效的 JSON 列表格式内容！\")\n\ndef main(input_list: str) -> dict:\n    \"\"\"\
+          \n    将 List of JSON 转换为 Markdown Table 字符串\n    输入示例: [{\"name\": \"Alice\"\
+          , \"age\": 25}, {\"name\": \"Bob\", \"age\": 30}]\n    \"\"\"\n    input_list\
+          \ = extract_json_from_text(input_list)\n    if not input_list:\n       \
+          \ return {\"md_output\": \"暂无数据\"}\n    \n    # 1. 获取表头（默认取第一个对象的 keys）\n\
+          \    headers = list(input_list[0].keys())\n    \n    # 2. 构建 Markdown 表头\n\
+          \    # 格式: | Name | Age |\n    md_table = \"| \" + \" | \".join(headers)\
+          \ + \" |\\n\"\n    \n    # 3. 构建分割线\n    # 格式: | --- | --- |\n    md_table\
+          \ += \"| \" + \" | \".join([\"---\"] * len(headers)) + \" |\\n\"\n    \n\
+          \    # 4. 遍历数据构建行\n    for item in input_list:\n        row_values = []\n\
+          \        for h in headers:\n            # 处理可能缺失的字段，并转为字符串，防止 Markdown 错乱\n\
+          \            val = str(item.get(h, \"\"))\n            # 简单的转义，防止内容中有 |\
+          \ 破坏表格\n            val = val.replace(\"|\", \"\\\\|\").replace(\"\\n\"\
+          , \"<br>\") \n            row_values.append(val)\n        md_table += \"\
+\" + \" | \".join(row_values) + \" |\\n\"\n        \n    return {\n  \
+          \      \"md_output\": md_table\n    }\n"
+        code_language: python3
+        default_value:
+key: md_output
+          type: string
+          value: ''
+        error_strategy: default-value
+        outputs:
+          md_output:
+            children: null
+            type: string
+        selected: false
+        title: 格式化为Markdown展示
+        type: code
+        variables:
+value_selector:
+'1768539572937'
+text
+          value_type: string
+          variable: input_list
+      height: 86
+      id: '1768555668465'
+      position:
+        x: 1730
+        y: 292
+      positionAbsolute:
+        x: 1730
+        y: 292
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        code: "\ndef main(item: dict):\n    return {\n        \"case_name\": item.get(\"\
+          case_name\"),\n    }\n"
+        code_language: python3
+        default_value:
+key: case_name
+          type: string
+          value: ''
+        error_strategy: default-value
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        outputs:
+          case_name:
+            children: null
+            type: string
+        selected: false
+        title: 提取用例名称
+        type: code
+        variables:
+value_selector:
+'1768483057445'
+item
+          value_type: object
+          variable: item
+      height: 86
+      id: '1768568230355'
+      parentId: '1768483057445'
+      position:
+        x: 848
+        y: 162
+      positionAbsolute:
+        x: 3946
+        y: 292
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+      zIndex: 1002
+data:
+        context:
+          enabled: false
+          variable_selector: []
+        default_value:
+key: text
+          type: string
+          value: '6'
+        error_strategy: default-value
+        memory:
+          query_prompt_template: '{{#sys.query#}}nn            {{#sys.files#}}'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0
+          mode: chat
+          name: privacy_DeepSeek-v3.1-w8a8-Instruct-Long
+          provider: langgenius/openai_api_compatible/openai_api_compatible
+        prompt_template:
+id: 8467f885-92ec-4c56-9ed2-270fbd35f06d
+          role: system
+          text: '# Role
+
+            你是一个专业的数仓测试用例生成助手的意图识别专家。你的任务是根据用户的最新输入（User Query）以及当前的对话上下文（Context），精准判断用户的意图，并将其归类到唯一的类别中。nn            # Context Data
+用户最新输入: {{#sys.query#}}
+结合用户与assistant的聊天历史来辅助判断。例如：若上一轮系统回复的是“脑图/思维导图”，用户提出修改通常属于类别1；若回复的是“详细用例/SQL/Excel”，用户提出修改通常属于类别3)*nn            # Classification Categories & Criteria
+
+            请根据以下定义，严格按顺序匹配（优先级从高到低）：nn            Priority 1: [修正脑图] (class_type: 1)
+触发场景：用户对生成的测试点、测试结构、思维导图（XMind/Tree）提出修改意见。
+典型特征：包含“增加分支”、“删除节点”、“层级不对”、“测试点遗漏”、“业务逻辑不仅包含X”、“脑图”等关键词。
+状态约束：通常发生在“脑图生成后”且“详细用例生成前”。nn            Priority 2: [确认脑图无误，生成测试用例] (class_type: 2)
+触发场景：脑图不为空且用户认可当前的测试结构或思维导图，希望进入下一步（生成详细用例）。脑图：{{#conversation.test_case_naotu#}}
+典型特征：包含“脑图没问题”、“结构可以”、“生成用例吧”、“继续”、“下一步”等表达。nn            Priority 3: [初次生成请求] (class_type: 3)
+触发场景：用户开启一个新的话题，提供需求文档、表结构（DDL）或业务描述，请求开始生成测试。
+典型特征：包含“帮我生成测试用例”、“这是需求文档”、“针对这张表写测试”、“开始测试任务”等，或者是直接粘贴了大段的需求/代码。nn            Priority 4: [其他/闲聊] (class_type: 4)
+触发场景：与测试用例生成任务无关的输入，或无法识别具体指令的模糊输入。
+典型特征：打招呼、询问天气、无意义字符、询问你是谁等。nn            # Decision Logic (Step-by-Step)
+分析当前状态：首先看 上一轮系统回复类型 是处于“脑图阶段”还是“详细用例阶段”。
+语义匹配：分析 用户最新输入 的关键词和语义重心。
+冲突解决：如果用户输入模糊（如“帮我改一下”），若当前是脑图阶段则归为1，若当前是详细用例阶段则归为3。nn            # Output Format
+
+            请仅输出一个标准的JSON字符串，严禁包含Markdown标记（如json ... ）：
+
+            {"class_reason": "简短分析：当前处于[状态]，用户意图是[关键词/语义]，符合类别[X]的定义", "class_type":
+            1/2/3/4}'
+        selected: false
+        title: 意图分类
+        type: llm
+        vision:
+          enabled: false
+      height: 122
+      id: '1768634135961'
+      position:
+        x: 342
+        y: 237
+      positionAbsolute:
+        x: 342
+        y: 237
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        code: "import json\n\ndef main(class_info: str):\n    class_info = json.loads(class_info)\n\
+          \n    return {\n        \"class_type\": str(class_info.get('class_type',\
+          \ '3'))\n    }\n"
+        code_language: python3
+        default_value:
+key: class_type
+          type: string
+          value: '6'
+        error_strategy: default-value
+        outputs:
+          class_type:
+            children: null
+            type: string
+        selected: false
+        title: 提取意图分类
+        type: code
+        variables:
+value_selector:
+'1768634135961'
+text
+          value_type: string
+          variable: class_info
+      height: 86
+      id: '1768634665621'
+      position:
+        x: 684
+        y: 255
+      positionAbsolute:
+        x: 684
+        y: 255
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        cases:
+case_id: 'true'
+          conditions:
+comparison_operator: contains
+            id: 07614321-c130-44d1-870b-d3fd60f1ebca
+            value: '1'
+            varType: string
+            variable_selector:
+'1768634665621'
+class_type
+          id: 'true'
+          logical_operator: and
+case_id: a2eebe00-83ff-420a-b769-0623d6d223e9
+          conditions:
+comparison_operator: is
+            id: 150b2b96-6a01-4bae-bb9f-2307378ca4c7
+            value: '2'
+            varType: string
+            variable_selector:
+'1768634665621'
+class_type
+          id: a2eebe00-83ff-420a-b769-0623d6d223e9
+          logical_operator: and
+case_id: 9eaab42d-33fd-425d-a9a8-5f9a3d3b06ee
+          conditions:
+comparison_operator: is
+            id: b8b43272-80fa-4d4f-84b6-482589398ac8
+            value: '3'
+            varType: string
+            variable_selector:
+'1768634665621'
+class_type
+          id: 9eaab42d-33fd-425d-a9a8-5f9a3d3b06ee
+          logical_operator: and
+case_id: 8c6c39e1-2462-4788-838e-ce49e2cfda3d
+          conditions:
+comparison_operator: is
+            id: 3f9218e6-cff1-46d9-9912-f4ee5a4fe94d
+            value: '4'
+            varType: string
+            variable_selector:
+'1768634665621'
+class_type
+          id: 8c6c39e1-2462-4788-838e-ce49e2cfda3d
+          logical_operator: and
+        selected: false
+        title: 意图路由
+        type: if-else
+      height: 266
+      id: '1768634714409'
+      position:
+        x: 1026
+        y: 165
+      positionAbsolute:
+        x: 1026
+        y: 165
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        context:
+          enabled: false
+          variable_selector: []
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        model:
+          completion_params:
+            temperature: 0
+          mode: chat
+          name: privacy_Qwen3-Coder-480B-A35B-ReAct
+          provider: langgenius/openai_api_compatible/openai_api_compatible
+        prompt_template:
+id: 3df9505c-e2a2-4215-9200-ceaaf95ea14d
+          role: system
+          text: "# Role\n你是一名资深的ETL测试工程师，擅长从复杂的数仓设计文档中剥离出关键信息。\n\n# Task\n你的任务是根据给定的【目标测试用例】，从海量的【Table\
+            \ Mapping】和【Field Mapping】中，仅提取生成该测试用例SQL所需的关键逻辑。\n\n# Input Data\n\
+测试用例 (Target Test Case): \n   {{#1768483057445.item#}}\n   (请仔细分析该用例涉及的目标表字段、源表范围以及具体的校验逻辑)\n\
+            \n2. 表级 Mapping (Table Logic): \n   {{#conversation.mapping_table1#}}\n\
+            \n3. 字段级 Mapping (Column Logic): \n   {{#conversation.mapping_table2#}}\n\
+            \n# Extraction Rules (Filter Logic)\n由于Mapping文件非常大，请严格遵循“最小够用原则”进行提取，过滤掉噪音：\n\
+            \n1. 相关性过滤（字段级）：\n   - 检查【测试用例】中提及了哪些字段（作为过滤条件或校验对象）。\n   - 在【字段级\
+            \ Mapping】中，只保留上述相关字段的计算逻辑（Calculation）、来源字段（Source Column）和转换规则。\n\
+            \   - 严禁包含测试用例未提及的字段映射信息。\n\n2. 相关性过滤（表级）：\n   - 根据保留的字段，在【表级\
+            \ Mapping】中找到其所属的源表（Source Table）。\n   - 只提取与这些源表相关的 JOIN 关系（关联键）、关键的\
+            \ WHERE 过滤条件。\n   - 忽略与本次测试无关的中间表或无关的关联路径。\n\n3. 辅助SQL生成：\n   - 提取的信息必须足够支持编写一段验证性的SQL（即包含\
+            \ SELECT 列表、FROM/JOIN 结构、WHERE 条件）。\n\n# Output\n仅输出标准JSON字符串，不要包含Markdown标记：\n\
+            {\n  \"table_mapping_useful_info\": \"提取出的表级关键信息（源表名、关联方式、过滤条件），去除无关内容\"\
+            ,\n  \"col_table_mapping_useful_info\": \"提取出的字段级关键信息（仅包含测试用例涉及字段的来源与计算逻辑）\"\
+            \n}"
+        selected: false
+        structured_output_enabled: false
+        title: LLM提取mapping中的关键信息
+        type: llm
+        vision:
+          enabled: false
+      height: 86
+      id: '1768636785422'
+      parentId: '1768483057445'
+      position:
+        x: 1814
+        y: 162
+      positionAbsolute:
+        x: 4912
+        y: 292
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+      zIndex: 1002
+data:
+        code: "import json\nimport re\n\n\ndef extract_json_from_text(text):\n   \
+          \ # 1. 预处理：如果 text 不是字符串，直接转字符串\n    if not isinstance(text, str):\n   \
+          \     text = str(text)\n\n    # 2. 尝试清洗 Markdown 代码块标记 (json ... )\n\
+          \    # 移除json 和 以及首尾空白\n    text_clean = re.sub(r'^json\\s*',\
+          \ '', text, flags=re.MULTILINE)\n    text_clean = re.sub(r'^\\s*', '',\
+          \ text_clean, flags=re.MULTILINE)\n    text_clean = re.sub(r'$', '',\
+          \ text_clean, flags=re.MULTILINE)\n    text_clean = text_clean.strip()\n\
+          \    \n    # 3. 尝试直接解析\n    try:\n        return json.loads(text_clean)\n\
+          \    except json.JSONDecodeError:\n        pass\n\n    # 4. 如果直接解析失败，尝试正则提取第一个\
+          \ { 到最后一个 }\n    match = re.search(r'(\\{.*\\})', text, re.DOTALL)\n   \
+          \ if match:\n        json_str = match.group(1)\n        try:\n         \
+          \   return json.loads(json_str)\n        except json.JSONDecodeError:\n\
+          \            pass\n\n    # 6. 如果都没有，返回空字典\n    return {}\n\ndef main(extract_mapping:\
+          \ str, item: dict, knowledge: list):\n    mapping_dict = extract_json_from_text(extract_mapping)\n\
+          \    # 生成Markdown表格\n    header = \"| Key | Value |\"\n    split = \"|---|---|\"\
+          \n    rows = [f\"| {k} | {v} |\" for k, v in item.items()]\n    md_table\
+          \ = \"\\n\".join([header, split] + rows)\n    \n    return {\n        \"\
+          table_mapping_useful_info\": mapping_dict.get('table_mapping_useful_info',\
+          \ ''),\n        \"col_table_mapping_useful_info\": mapping_dict.get('col_table_mapping_useful_info',\
+          \ ''),\n        'md_table': md_table,\n        'knowledge_list': knowledge\n\
+          \    }\n"
+        code_language: python3
+        default_value:
+key: table_mapping_useful_info
+          type: string
+          value: ''
+key: col_table_mapping_useful_info
+          type: string
+          value: ''
+key: md_table
+          type: string
+          value: ''
+key: knowledge_list
+          type: string
+          value: ''
+        error_strategy: default-value
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        outputs:
+          col_table_mapping_useful_info:
+            children: null
+            type: string
+          knowledge_list:
+            children: null
+            type: string
+          md_table:
+            children: null
+            type: string
+          table_mapping_useful_info:
+            children: null
+            type: string
+        selected: false
+        title: 提取mapping&few-shot
+        type: code
+        variables:
+value_selector:
+'1768636785422'
+text
+          value_type: string
+          variable: extract_mapping
+value_selector:
+'1768483057445'
+item
+          value_type: object
+          variable: item
+value_selector:
+'1769570150785'
+few_shot
+          value_type: string
+          variable: knowledge
+      height: 86
+      id: '1768637266263'
+      parentId: '1768483057445'
+      position:
+        x: 2136
+        y: 162
+      positionAbsolute:
+        x: 5234
+        y: 292
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+      zIndex: 1002
+data:
+        answer: '
+
+          ## 正在处理测试用例 {{#1768483057445.index#}} ({{#1768568230355.case_name#}})
+
+          ### 测试用例内容
+
+          {{#1768637266263.md_table#}}
+
+          ### 与本次测试用例相关的表级mapping
+
+          {{#1768637266263.table_mapping_useful_info#}}
+
+          ### 与本次测试用例相关的表级mapping
+
+          {{#1768637266263.col_table_mapping_useful_info#}}
+
+          ### 从知识库召回的参考用例
+
+          {{#1769570150785.few_shot#}}
+
+          '
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        selected: false
+        title: 直接回复 7
+        type: answer
+        variables: []
+      height: 289
+      id: '1768637837489'
+      parentId: '1768483057445'
+      position:
+        x: 2458
+        y: 60
+      positionAbsolute:
+        x: 5556
+        y: 190
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+      zIndex: 1002
+data:
+        code: "\ndef main(origin_test_case: list, new_test_case: list):\n    for origin_item\
+          \ in origin_test_case:\n        for new_item in new_test_case:\n       \
+          \     if new_item.get('case_name') == origin_item.get('case_name'):\n  \
+          \              origin_item['eval_step_descri'] = new_item.get('eval_step_descri',\
+          \ '')\n                origin_item['agent_thinking'] = new_item.get('agent_thinking',\
+          \ '')\n                origin_item['db_excute_result'] = new_item.get('db_excute_result',\
+          \ '')\n            \n    return {\n        \"new_test_case\": json.dumps(new_test_case,\
+          \ ensure_ascii=False)\n    }\n"
+        code_language: python3
+        default_value:
+key: new_test_case
+          type: string
+          value: '''[]'''
+        error_strategy: default-value
+        outputs:
+          new_test_case:
+            children: null
+            type: string
+        selected: false
+        title: 拷贝测试用例
+        type: code
+        variables:
+value_selector:
+'1768483278749'
+test_case_list
+          value_type: array[object]
+          variable: origin_test_case
+value_selector:
+'1768483057445'
+output
+          value_type: array[object]
+          variable: new_test_case
+      height: 86
+      id: '1768658381557'
+      position:
+        x: 9218
+        y: 292
+      positionAbsolute:
+        x: 9218
+        y: 292
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        default_value:
+key: text
+          type: string
+          value: Run Failed
+key: json
+          type: array[object]
+          value: '[]'
+        error_strategy: default-value
+        isInIteration: true
+        isInLoop: false
+        is_team_authorization: true
+        iteration_id: '1768483057445'
+        paramSchemas:
+auto_generate: null
+          default: ''
+          form: llm
+          human_description:
+            en_US: ''
+            ja_JP: ''
+            pt_BR: ''
+            zh_Hans: ''
+          label:
+            en_US: query_sql
+            ja_JP: query_sql
+            pt_BR: query_sql
+            zh_Hans: query_sql
+          llm_description: ''
+          max: null
+          min: null
+          name: query_sql
+          options: []
+          placeholder:
+            en_US: ''
+            ja_JP: ''
+            pt_BR: ''
+            zh_Hans: ''
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        params:
+          query_sql: ''
+        plugin_id: null
+        plugin_unique_identifier: null
+        provider_icon:
+          background: '#FFEAD5'
+          content: 🤖
+        provider_id: 49e3e195-ee19-4b1f-87cd-d740b47e71a7
+        provider_name: 访问数据库执行SQL
+        provider_type: workflow
+        selected: false
+        title: 访问数据库执行SQL
+        tool_configurations: {}
+        tool_description: 访问数据库执行GAUSS SQL,根据提供的SQL，到数据库执行并返回查询结果。
+        tool_label: 访问数据库执行SQL
+        tool_name: database_query_with_sql
+        tool_node_version: '2'
+        tool_parameters:
+          query_sql:
+            type: mixed
+            value: '{{#1768553077824.sql#}}'
+        type: tool
+      height: 86
+      id: '1768658658449'
+      parentId: '1768483057445'
+      position:
+        x: 3444
+        y: 177
+      positionAbsolute:
+        x: 6542
+        y: 307
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+      zIndex: 1002
+data:
+        is_team_authorization: true
+        paramSchemas:
+auto_generate: null
+          default: ''
+          form: llm
+          human_description:
+            en_US: 要发送的消息内容
+            ja_JP: 要发送的消息内容
+            pt_BR: 要发送的消息内容
+            zh_Hans: 要发送的消息内容
+          label:
+            en_US: content
+            ja_JP: content
+            pt_BR: content
+            zh_Hans: content
+          llm_description: 要发送的消息内容
+          max: null
+          min: null
+          name: content
+          options: []
+          placeholder:
+            en_US: ''
+            ja_JP: ''
+            pt_BR: ''
+            zh_Hans: ''
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+auto_generate: null
+          default: ''
+          form: llm
+          human_description:
+            en_US: 消息接收人工号，例如q00797588，数字最前面的字母代表姓氏首字母（小写）
+            ja_JP: 消息接收人工号，例如q00797588，数字最前面的字母代表姓氏首字母（小写）
+            pt_BR: 消息接收人工号，例如q00797588，数字最前面的字母代表姓氏首字母（小写）
+            zh_Hans: 消息接收人工号，例如q00797588，数字最前面的字母代表姓氏首字母（小写）
+          label:
+            en_US: receiver
+            ja_JP: receiver
+            pt_BR: receiver
+            zh_Hans: receiver
+          llm_description: 消息接收人工号，例如q00797588，数字最前面的字母代表姓氏首字母（小写）
+          max: null
+          min: null
+          name: receiver
+          options: []
+          placeholder:
+            en_US: ''
+            ja_JP: ''
+            pt_BR: ''
+            zh_Hans: ''
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        params:
+          content: ''
+          receiver: ''
+        plugin_id: null
+        plugin_unique_identifier: null
+        provider_icon:
+          background: '#FFEAD5'
+          content: 🤖
+        provider_id: 56c5d311-7872-49d1-88d0-475d6fe20e55
+        provider_name: send_msg
+        provider_type: workflow
+        selected: false
+        title: 发送成功提醒
+        tool_configurations: {}
+        tool_description: 发送消息，支持发送welink消息，Outlook邮件等
+        tool_label: send_msg
+        tool_name: send_msg
+        tool_node_version: '2'
+        tool_parameters:
+          content:
+            type: mixed
+            value: '{{#1768483862919.body#}}'
+          receiver:
+            type: mixed
+            value: '{{#conversation.user_w3_id#}}'
+        type: tool
+      height: 50
+      id: '1768710190090'
+      position:
+        x: 9902
+        y: 310
+      positionAbsolute:
+        x: 9902
+        y: 310
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        items:
+input_type: variable
+          operation: over-write
+          value:
+'1768438689128'
+w3_id
+          variable_selector:
+conversation
+user_w3_id
+          write_mode: over-write
+        selected: false
+        title: w3账号赋值
+        type: assigner
+        version: '2'
+      height: 82
+      id: '1768710291775'
+      position:
+        x: 3902
+        y: 673
+      positionAbsolute:
+        x: 3902
+        y: 673
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        agent_parameters:
+          instruction:
+            type: constant
+            value: "<instruction prompt>\n# Role\n你是一名精通数仓自动化测试的 SQL 专家。你的任务是为给定的测试用例生成准确、可执行的验证\
+              \ SQL 脚本。\n\n# Input Context\n1. 参考范例 (Reference):\n   - 包含历史相似用例的\
+              \ SQL 写法，请仔细模仿其逻辑结构（如 count 对比或字段校验）：\n   {{#1769570150785.few_shot#}}\n\
+测试用例详情 (Case Detail):\n   - 重点关注 eval_step_descri (SQL伪代码/业务逻辑)\
+              \ 、 expected_result (预期结果)、case_name（命名规范为[IT用例/业务用例/配置调度][条件/操作（表视图检查、字段检查、业务逻辑检查、配置等）][对象英文名]_[预期结果]，可根据测试用例命名的[对象英文名]辅助确认目标对象，目标对象schema从mapping获取）。测试用例详情：\n\
+              \   {{#1768637266263.md_table#}}\n3. 映射逻辑 (Mappings):\n   - <表级关联>\
+              \ (决定 JOIN/WHERE)：{{#1768637266263.table_mapping_useful_info#}}\n  \
+              \ - <字段计算> (决定 SELECT)：{{#1768637266263.col_table_mapping_useful_info#}}\n\
+目标表结构 (DDL):\n   {{#conversation.DDL#}}\n\n# Workflow (必须严格遵守的执行流程)\n\
+              ## Step 1: 策略分析 (Analyze)\n- 阅读 Context 中的 参考范例，确定 SQL 风格。\n- 分析\
+              \ 测试用例详情 中的 expected_result（例如：预期行数为0，或预期字段值为 'Active'）。\n- 确定断言逻辑：什么情况算\
+              \ PASS，什么情况算 FAIL。\n\n## Step 2: 编写初版 SQL (Draft)\n- 根据 Mapping 和 DDL\
+              \ 编写 SQL。\n- 关键规则 A (Schema)：必须检查 Context 中的 DDL以及<表级关联>，确保表名严格遵循\
+              \ schema.table_name 格式，字段名拼写完全一致。\n- 关键规则 B (PASS/FAIL 输出)：\n\
+              \  - 你的 SQL 必须包含断言逻辑，直接输出 'PASS' 或 'FAIL'。\n  - 使用 CASE WHEN 结构。\n\
+              \  - 示例模式 1 (结果对比):\n    \n    SELECT CASE WHEN count() =\
+              \ 0 THEN 'PASS' ELSE 'FAIL' END as test_result FROM ...\n\n \
+              \ - 示例模式 2 (值校验):\n    \n    SELECT CASE WHEN target_col =\
+              \ 'expected_val' THEN 'PASS' ELSE 'FAIL' END as test_result FROM ...\n\
+              \\n\n## Step 3: 执行与诊断 (Execute & Diagnose) —— 核心决策点\n你必须调用\
+              \ database_query_with_sql 工具执行你编写的 SQL，并根据工具返回的 Observation 进行严格的二选一决策：\n\
+              \n### 情况 A：工具返回“执行报错” (Runtime Error)\n特征：返回包含 \"Syntax error\", \"\
+              Table not found\", \"Column not found\", \"AnalysisException\" 等错误信息。*\n\
+判断：这是 SQL 语法或元数据错误。\n- 行动：\n  1. 不要直接重试相同的 SQL。\n  2.\
+              \ 必须重新阅读 Context 中的 DDL以及mapping，或者调用工具database_query_with_sql到数据库查询有哪些表/字段/字段distinct取值范围/select\
+              \ * from xxx limit x看几行示例数据，辅助编写正确的SQL。\n  3. 修正 SQL 语法后，再次调用 database_query_with_sql。\n\
+              \n### 情况 B：工具返回“执行成功” (Execution Success)\n*特征：工具没有报错，返回了查询结果（结果可能是\
+              \ \"PASS\" 或 \"FAIL\"）。\n- 判断：SQL 语法是完全正确的。\n- 行动：\n  1. 无论结果是\
+              \ 'PASS' 还是 'FAIL'，都代表 SQL 能够正常运行并完成了测试任务。\n  2. 严禁为了让结果变成 'PASS'\
+              \ 而修改 SQL 逻辑（例如删除 WHERE 条件）。\n  3. 立即停止工具调用，直接进入 Step 4。\n\n## Step\
+              \ 4: 最终输出 (Final Answer)\n仅当 Step 3 处于“情况 B”时，输出最终 JSON：\nFinal Answer\n\
+              \n{\"sql\": \"最终验证通过的 SQL 语句\"}\n"
+          maximum_iterations:
+            type: constant
+            value: 3
+          model:
+            type: constant
+            value:
+              completion_params: {}
+              mode: chat
+              model: GPT-4.1-only-for-qrb
+              model_type: llm
+              provider: langgenius/openai_api_compatible/openai_api_compatible
+              type: model-selector
+          query:
+            type: constant
+            value: '生成能验证测试用例是否通过的GAUSS DB SQL（该数据库需要关键词小写，包括字段内记录的表名、字段名等要小写，当用“=“匹配时最好能用
+              lower, upper等来转换字段后再匹配，否则可能导致找不到数据，一般视图命名以_i, _vi结尾，表命名以_f结尾）：{{#1768637266263.md_table#}}nn              按照以下格式回答：
+
+              Final Answer
+
+              {"sql": "最终验证通过的 SQL 语句"}'
+          tools:
+            type: constant
+            value:
+enabled: true
+              extra:
+                description: 访问数据库执行GAUSS SQL,根据提供的SQL，到数据库执行并返回查询结果。
+              parameters:
+                query_sql:
+                  auto: 1
+                  value: null
+              provider_name: 49e3e195-ee19-4b1f-87cd-d740b47e71a7
+              provider_show_name: 访问数据库执行SQL
+              schemas:
+auto_generate: null
+                default: ''
+                form: llm
+                human_description:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                label:
+                  en_US: query_sql
+                  ja_JP: query_sql
+                  pt_BR: query_sql
+                  zh_Hans: query_sql
+                llm_description: ''
+                max: null
+                min: null
+                name: query_sql
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: true
+                scope: null
+                template: null
+                type: string
+              settings: {}
+              tool_description: 访问数据库执行GAUSS SQL,根据提供的SQL，到数据库执行并返回查询结果。
+              tool_label: 访问数据库执行SQL
+              tool_name: database_query_with_sql
+              type: workflow
+        agent_strategy_label: ReAct
+        agent_strategy_name: ReAct
+        agent_strategy_provider_name: langgenius/agent/agent
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        memory:
+          query_prompt_template: '{{#sys.query#}}nn            {{#sys.files#}}'
+          window:
+            enabled: true
+            size: 5
+        meta:
+          minimum_dify_version: 1.7.0
+          version: 0.0.2
+        output_schema: {}
+        plugin_unique_identifier: langgenius/agent:0.0.30@ee903be127aef6ad9d7c80c571f804edfdb3e32beef269275cae35e31dd31dac
+        selected: false
+        title: Agent-生成测试用例SQL
+        tool_node_version: '2'
+        type: agent
+      height: 186
+      id: '1769514001390'
+      parentId: '1768483057445'
+      position:
+        x: 2780
+        y: 112
+      positionAbsolute:
+        x: 5878
+        y: 242
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+      zIndex: 1002
+data:
+        agent_parameters:
+          instruction:
+            type: constant
+            value: "# Role\n你是一位资深的数据仓库测试专家，擅长从测试用例中提炼业务逻辑，并结合知识库参考片段，构建精准的校验 SQL。\n\
+              \n# Task\n分析【待测试用例】，检索知识库 \"knowledge_test_case_sql\"。你需要提取或根据参考片段“转写”出最契合当前测试目标的\
+              \ SQL。\n\n# Workflow\n1. 意图理解与检索：分析【待测试用例】的源表、目标表、映射逻辑（Mapping）和过滤条件，从case_name中提取关键词并检索知识库。\n\
+逻辑评估与泛化：\n   - 评估召回内容：知识库不一定存在 100% 匹配的记录。\n   - 如果完全匹配：直接提取核心\
+              \ SQL。\n   - 如果部分匹配：若召回片段包含相似的业务逻辑（例如：相同的环比计算逻辑、复杂的 Case When 转换、特定的\
+              \ Null 值处理），请以该逻辑为模板，结合当前用例的表名和字段，组装/改写出可运行的参考 SQL。\n3. 精准提取：去除所有无关的\
+              \ DDL 或注释，仅保留最具参考价值的 DML 语句。\n4. 决策处理：若检索不到任何逻辑相关的片段，输出：{\"few_shot\"\
+              : \"未找到可参考的业务逻辑或SQL\"}。\n\n# Constraints\n- 严禁虚构字段：改写 SQL 时必须严格遵循【待测试用例】中提供的表名和字段名。\n\
+ReAct 规范：严禁在 Observation 中手动输入工具调用结果。系统会自动填充该部分，你只需基于系统填充的检索结果进行分析。\n\
+输出纯净度：最终输出必须是合法的 JSON 格式，且 few_shot 字段内只包含 SQL 逻辑。\n\n# Input\
+              \ Data\n待测试测试用例：\n{{#1768483057445.item#}}\n\n# Output\n请直接输出以下 JSON\
+              \ 格式，不要包含任何多余的解释：\nFinal Answer\n\n{\"few_shot\": \"<在此处填入提取或适配后的\
+              \ SQL>\"}"
+          maximum_iterations:
+            type: constant
+            value: 3
+          model:
+            type: constant
+            value:
+              completion_params: {}
+              mode: chat
+              model: ' privacy_Qwen3-Coder-Flash'
+              model_type: llm
+              provider: langgenius/openai_api_compatible/openai_api_compatible
+              type: model-selector
+          query:
+            type: constant
+            value: 输出本次测试用例可借鉴的SQL
+          tools:
+            type: constant
+            value:
+enabled: true
+              extra:
+                description: 常见测试用例及其对应的SQL few shot
+              parameters:
+                test_case_name:
+                  auto: 1
+                  value: null
+              provider_name: 33ad6e27-be93-487b-bc9c-bbe2e8177bcb
+              provider_show_name: 常见测试用例-few-shot-知识库
+              schemas:
+auto_generate: null
+                default: ''
+                form: llm
+                human_description:
+                  en_US: 测试用例名称，例如 IT用例_表视图dwb_ltc_invoice_head_i目标表/视图及临时表存在检查
+                  ja_JP: 测试用例名称，例如 IT用例_表视图dwb_ltc_invoice_head_i目标表/视图及临时表存在检查
+                  pt_BR: 测试用例名称，例如 IT用例_表视图dwb_ltc_invoice_head_i目标表/视图及临时表存在检查
+                  zh_Hans: 测试用例名称，例如 IT用例_表视图dwb_ltc_invoice_head_i目标表/视图及临时表存在检查
+                label:
+                  en_US: test_case_name
+                  ja_JP: test_case_name
+                  pt_BR: test_case_name
+                  zh_Hans: test_case_name
+                llm_description: 测试用例名称，例如 IT用例_表视图dwb_ltc_invoice_head_i目标表/视图及临时表存在检查
+                max: null
+                min: null
+                name: test_case_name
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: true
+                scope: null
+                template: null
+                type: string
+              settings: {}
+              tool_description: 常见测试用例及其对应的SQL few shot
+              tool_label: 常见测试用例-few-shot-知识库
+              tool_name: knowledge_test_case_sql
+              type: workflow
+        agent_strategy_label: ReAct
+        agent_strategy_name: ReAct
+        agent_strategy_provider_name: langgenius/agent/agent
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        memory:
+          query_prompt_template: '{{#sys.query#}}nn            {{#sys.files#}}'
+          window:
+            enabled: false
+            size: 50
+        meta:
+          minimum_dify_version: 1.7.0
+          version: 0.0.2
+        output_schema: {}
+        plugin_unique_identifier: langgenius/agent:0.0.30@ee903be127aef6ad9d7c80c571f804edfdb3e32beef269275cae35e31dd31dac
+        selected: false
+        title: Agent-查询知识库获取few shot
+        tool_node_version: '2'
+        type: agent
+      height: 186
+      id: '1769565941597'
+      parentId: '1768483057445'
+      position:
+        x: 1170
+        y: 112
+      positionAbsolute:
+        x: 4268
+        y: 242
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+      zIndex: 1002
+data:
+        code: "import json\nimport re\n\n\ndef extract_json_from_text(text):\n   \
+          \ # 1. 保证输入为字符串\n    if not isinstance(text, str):\n        text = str(text)\n\
+          \n    # 2. 查找所有json ... 代码块\n    # 非贪婪匹配json 开头, 直到下一个 \n\
+          \    pattern = r\"json\\s(.+?)\\s*```\"\n    matches = re.findall(pattern,\
+          \ text, re.DOTALL)\n\n    # 3. 如果有匹配，取最后一个\n    if matches:\n        last_json\
+          \ = matches[-1].strip()\n        try:\n            return json.loads(last_json)\n\
+          \        except json.JSONDecodeError:\n            pass\n\n    # 4. 若找不到或解析失败，返回空字典\n\
+          \    return {}\n\n\ndef main(agent_knowledge: str):\n    few_shot = extract_json_from_text(agent_knowledge)\n\
+          \    if not few_shot:\n        few_shot = agent_knowledge\n    else:\n \
+          \       few_shot = json.dumps(few_shot, ensure_ascii=False)\n    return\
+          \ {\n        \"few_shot\": few_shot\n    }\n"
+        code_language: python3
+        default_value:
+key: few_shot
+          type: string
+          value: 无
+        error_strategy: default-value
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1768483057445'
+        outputs:
+          few_shot:
+            children: null
+            type: string
+        selected: false
+        title: 提取few-shot
+        type: code
+        variables:
+value_selector:
+'1769565941597'
+text
+          value_type: string
+          variable: agent_knowledge
+      height: 86
+      id: '1769570150785'
+      parentId: '1768483057445'
+      position:
+        x: 1492
+        y: 162
+      positionAbsolute:
+        x: 4590
+        y: 292
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+      zIndex: 1002
+data:
+        cases:
+case_id: 'true'
+          conditions:
+comparison_operator: exists
+            id: 1947580f-f9a2-4795-adc8-e2cb2a0d0d94
+            value: ''
+            varType: file
+            variable_selector:
+'1768438689128'
+RS
+          id: 'true'
+          logical_operator: and
+        selected: false
+        title: 条件分支 5
+        type: if-else
+      height: 122
+      id: '1774228896483'
+      position:
+        x: 1750
+        y: 909
+      positionAbsolute:
+        x: 1750
+        y: 909
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        items:
+input_type: constant
+          operation: set
+          value: 不涉及
+          variable_selector:
+conversation
+RS
+          write_mode: over-write
+        selected: false
+        title: RS兜底为空
+        type: assigner
+        version: '2'
+      height: 82
+      id: '1774229422570'
+      position:
+        x: 2816
+        y: 1061
+      positionAbsolute:
+        x: 2816
+        y: 1061
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        is_array_file: false
+        selected: false
+        title: TS文档解析
+        type: document-extractor
+        variable_selector:
+'1768438689128'
+TS
+      height: 103
+      id: '1774230090685'
+      position:
+        x: 1750
+        y: 1143
+      positionAbsolute:
+        x: 1750
+        y: 1143
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0
+          mode: chat
+          name: privacy_Qwen3-Coder-480B-A35B-Instruct
+          provider: langgenius/openai_api_compatible/openai_api_compatible
+        prompt_template:
+id: 24eb3600-2a91-42cd-8662-9150bc1ffbd1
+          role: system
+          text: '你是一个文档分析师。请阅读以下文档片段，根据TS文档内容提取表的基本信息：
+需要提取的基本信息有：目标表的schema、表名、分布方式、分区键、索引、主键、以及本次变更内容。
+仅关注“功能简要说明”和“物理模型设计”部分
+一个TS文档的目标表都在同一个schema下
+一个TS文档的目标表可能有多个，需全部提取：以_tmp[0-9]*结尾的是临时表，以_f结尾的是事实表，以_i结尾的是对外提供消费的资产
+一个TS文档的多个目标表主键相同
+表的主键等价于对象的粒度，可以从对象的粒度获取
+如TS中无分布方式设计，则对象类型为视图
+_i结尾的对象可以是视图也可以是物理表
+本次变更内容可以从变更记录章节获取，取最新的一行nn            文档内容：{{#1774230090685.text#}}nn            注意，必须按如下json格式输出，不要增加解释：
+
+            {schema: fin_dwb_cs, 目标表:[dwb_cs_order_base_i, dwb_cs_order_base_f.dwb_cs_order_base_tmp],主键:order_base_id,分布方式:{dwb_cs_order_base_i:
+            无, dwb_cs_order_base_f: 哈希分布 order_base_id,dwb_cs_order_base_tmp: 哈希分布
+            order_base_id},索引:{dwb_cs_order_base_i: 无, dwb_cs_order_base_f: 无,dwb_cs_order_base_tmp:无},本次优化点:
+            {IR单号:IR001, 变更类型: 新增, 详情:新建表}
+
+            }'
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 1000
+        selected: false
+        title: TS文档要素提取
+        type: llm
+        vision:
+          enabled: false
+      height: 116
+      id: '1774230120418'
+      position:
+        x: 2092
+        y: 1136
+      positionAbsolute:
+        x: 2092
+        y: 1136
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    viewport:
+      x: -371.37960346756904
+      y: 159.23226844120643
+      zoom: 0.3968502670909963
+  rag_pipeline_variables: []
