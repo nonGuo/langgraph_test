@@ -52,9 +52,13 @@ class Config:
     db_statement_timeout: int = int(os.getenv("DB_STATEMENT_TIMEOUT", "30"))
     db_max_rows: int = int(os.getenv("DB_MAX_ROWS", "1000"))
     
-    # Excel Generation API
+    # Excel Generation API (保留配置项以兼容旧代码)
     excel_api_url: str = os.getenv("EXCEL_API_URL", "http://10.31.169.36:9002/generate_excel")
     excel_api_timeout: int = int(os.getenv("EXCEL_API_TIMEOUT", "300"))
+
+    # Excel 本地生成配置
+    excel_output_dir: str = os.getenv("EXCEL_OUTPUT_DIR", "./excel_output")
+    excel_filename_prefix: str = os.getenv("EXCEL_FILENAME_PREFIX", "测试用例_")
     
     # Notification Configuration
     notification_enabled: bool = os.getenv("NOTIFICATION_ENABLED", "true").lower() == "true"

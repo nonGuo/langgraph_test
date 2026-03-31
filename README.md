@@ -222,39 +222,92 @@ class DatabaseTool:
 
 ### 2. KnowledgeTool (`tools/knowledge_tool.py`)
 
-**待实现** - 知识库检索工具
+**已实现** - 基于 FAISS 的本地知识库检索工具
 
+功能特性：
+- ✅ 文档导入和向量化（支持 Markdown, TXT, PDF 等格式）
+- ✅ 基于语义的相似度检索
+- ✅ 分数阈值过滤
+- ✅ 知识库持久化（FAISS 索引 + pickle）
+- ✅ Few-shot SQL 示例检索
+
+核心方法：
 ```python
-# TODO: 实现实际的知识库 API 集成
 class KnowledgeTool:
-    def search(self, query: str, test_case_name: str) -> KnowledgeResult:
-        # 实现知识库搜索
-        pass
+    def add_documents(self, documents: list[str], metadatas: list[dict]) -> int:
+        """添加文档到知识库"""
+
+    def search(self, query: str, top_k: int = 3) -> KnowledgeResult:
+        """检索知识库"""
+
+    def retrieve_few_shot(self, test_case_item: dict) -> str:
+        """为测试用例检索 few-shot SQL 示例"""
 ```
 
 ### 3. MessagingTool (`tools/messaging_tool.py`)
 
-**待实现** - 消息通知工具
+**桩实现** - 消息通知工具（暂不需要真实通知）
 
-```python
-# TODO: 实现 WeLink/SMTP 集成
-class MessagingTool:
-    def send_welink(self, receiver: str, content: str) -> MessageResult:
-        # 实现 WeLink API 调用
-        pass
-```
+当前状态：
+- ⚠️ 模拟实现，返回伪造的成功结果
+- ⚠️ 不影响程序运行，只是不会真实发送消息
+- 如需真实通知，需实现 WeLink API 或 SMTP 集成
 
 ### 4. ExcelClient (`api/excel_client.py`)
 
-**待实现** - Excel 生成客户端
+**已实现** - 本地 Excel 生成客户端
 
+功能特性：
+- ✅ 使用 openpyxl 库在本地生成 Excel 文件
+- ✅ 支持自定义字段到表头的映射
+- ✅ 自动调整列宽
+- ✅ 表头样式（蓝色背景、白色粗体字）
+- ✅ 交替行背景色
+- ✅ 完整的边框样式
+- ✅ 支持文件输出和字节流返回
+
+字段映射配置 (`excel_config/__init__.py`):
 ```python
-# TODO: 实现 Excel 生成 API 或使用库
-class ExcelClient:
-    def generate_excel(self, test_cases: list) -> ExcelGenerationResult:
-        # 实现 Excel 文件生成
-        pass
+# 字段名 -> 中文表头
+TEST_CASE_FIELD_HEADERS = {
+    "case_name": "测试用例名称",
+    "level": "测试等级",
+    "pre_condition": "前置条件",
+    "need_generate_sql": "是否需要 SQL",
+    "eval_step_descri": "测试步骤描述",
+    "expected_result": "预期结果",
+    "tags": "标签",
+    "agent_thinking": "Agent 思考过程",
+    "db_excute_result": "数据库执行结果",
+}
+
+# 字段显示顺序
+TEST_CASE_FIELD_ORDER = ["case_name", "level", "pre_condition", ...]
+
+# 列宽配置
+TEST_CASE_COLUMN_WIDTHS = {"case_name": 40, "level": 12, ...}
+
+# 值转换规则
+TEST_CASE_FIELD_CONVERTERS = {
+    "need_generate_sql": lambda x: "是" if x else "否",
+    "level": lambda x: x.replace("level", "L"),
+}
 ```
+
+核心方法：
+```python
+class ExcelClient:
+    def generate_excel(self, test_cases: list[dict], filename: str = None) -> ExcelGenerationResult:
+        """生成 Excel 文件"""
+
+    def generate_excel_sync(self, test_cases: list[dict]) -> ExcelGenerationResult:
+        """同步版本（兼容旧接口）"""
+```
+
+与 LangGraph 节点交互：
+- `send_notification_node` 调用 `excel_client.generate_excel_sync()` 生成 Excel
+- 返回 `ExcelGenerationResult(success, file_path, file_content, row_count)`
+- 文件路径存入 `state["body"]` 用于通知消息
 
 ## 迁移说明
 

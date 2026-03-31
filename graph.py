@@ -355,10 +355,10 @@ def create_graph(
     messaging_tool = kwargs.get("messaging_tool") or MessagingTool(
         enabled=config.notification_enabled,
     )
-    
+
     excel_client = kwargs.get("excel_client") or ExcelClient(
-        base_url=config.excel_api_url,
-        timeout=config.excel_api_timeout,
+        output_dir=config.excel_output_dir,
+        filename_prefix=config.excel_filename_prefix,
     )
     
     return AI4TestGraph(

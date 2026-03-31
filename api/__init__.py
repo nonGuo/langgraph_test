@@ -2,6 +2,6 @@
 API clients for external services.
 """
 
-from .excel_client import ExcelClient
+from .excel_client import ExcelClient, ExcelGenerationResult
 
-__all__ = ["ExcelClient"]
+__all__ = ["ExcelClient", "ExcelGenerationResult"]
