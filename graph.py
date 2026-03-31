@@ -330,6 +330,9 @@ def create_graph(
         database=config.db_name,
         user=config.db_user,
         password=config.db_password,
+        pool_size=config.db_pool_size,
+        statement_timeout=config.db_statement_timeout,
+        max_rows=config.db_max_rows,
     )
     
     knowledge_tool = kwargs.get("knowledge_tool") or KnowledgeTool(

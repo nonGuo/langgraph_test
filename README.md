@@ -1,53 +1,53 @@
 # AI4Test LangGraph
 
-AI-powered test case generation for data warehouse testing, migrated from Dify chatflow to LangGraph implementation.
+基于 LangGraph 的智能测试用例生成系统，用于数据仓库测试。从 Dify chatflow 迁移而来。
 
-## Overview
+## 概述
 
-This project implements an intelligent test case generation assistant that:
+本项目实现了一个智能测试用例生成助手，具备以下能力：
 
-- 📄 **Parses documents**: Mapping documents, RS (Requirement Specification), TS (Technical Specification)
-- 🧠 **Classifies intent**: Understands user requests (new task, modify mind map, chat, etc.)
-- 🗺️ **Generates mind maps**: Creates test case structures in Mermaid format
-- 📝 **Creates test cases**: Converts mind maps to structured JSON test cases
-- 💾 **Generates SQL**: Creates validation SQL for each test case using ReAct agents
-- 📊 **Exports to Excel**: Generates formatted Excel files
-- 🔔 **Sends notifications**: Notifies users via WeLink when complete
+- 📄 **文档解析**：解析映射文档、RS（需求规格说明书）、TS（技术规格说明书）
+- 🧠 **意图分类**：理解用户请求（新任务、修改思维导图、聊天等）
+- 🗺️ **生成思维导图**：以 Mermaid 格式创建测试用例结构
+- 📝 **创建测试用例**：将思维导图转换为结构化的 JSON 测试用例
+- 💾 **生成 SQL**：使用 ReAct Agent 为每个测试用例生成验证 SQL
+- 📊 **导出 Excel**：生成格式化的 Excel 文件
+- 🔔 **发送通知**：通过 WeLink 通知用户完成状态
 
-## Architecture
+## 架构
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        AI4Test Graph                             │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│  START → Intent Classification → Router                         │
+│  START → 意图分类 → 路由                                         │
 │                                                                  │
-│  Branch 1: Chat/Guidance → LLM Response → END                  │
-│  Branch 2: Confirm Mind Map → Generate Test Cases → ...        │
-│  Branch 3: Document Processing → Extract → Generate → END      │
-│  Branch 4: Other → LLM Response → END                          │
+│  分支 1: 聊天/引导 → LLM 响应 → END                              │
+│  分支 2: 确认思维导图 → 生成测试用例 → ...                        │
+│  分支 3: 文档处理 → 提取 → 生成 → END                            │
+│  分支 4: 其他 → LLM 响应 → END                                   │
 │                                                                  │
-│  Document Processing Flow:                                       │
-│    Parse Mapping → Parse RS → Parse TS → Extract Test Points   │
-│    → Knowledge Retrieval → Generate Mind Map                   │
-│    → Generate Test Cases → Generate SQL (Iteration)            │
-│    → Generate Excel → Send Notification → END                  │
+│  文档处理流程：                                                   │
+│    解析映射 → 解析 RS → 解析 TS → 提取测试点                     │
+│    → 知识检索 → 生成思维导图                                     │
+│    → 生成测试用例 → 生成 SQL (迭代)                               │
+│    → 生成 Excel → 发送通知 → END                                 │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Project Structure
+## 项目结构
 
 ```
 langgraph_test/
 ├── __init__.py
-├── state.py              # TypedDict state definitions
-├── config.py             # Configuration & environment variables
-├── graph.py              # Main graph assembly
-├── main.py               # CLI entry point
-├── pyproject.toml        # Project dependencies
-├── requirements.txt      # Pip requirements
+├── state.py              # TypedDict 状态定义
+├── config.py             # 配置与环境变量
+├── graph.py              # 主图组装
+├── main.py               # CLI 入口
+├── pyproject.toml        # 项目依赖
+├── requirements.txt      # Pip 依赖
 ├── nodes/
 │   ├── __init__.py
 │   ├── intent_classifier.py
@@ -59,87 +59,87 @@ langgraph_test/
 │   └── notification_sender.py
 ├── edges/
 │   ├── __init__.py
-│   └── routing.py        # Conditional edge logic
+│   └── routing.py        # 条件边逻辑
 ├── tools/
 │   ├── __init__.py
-│   ├── database_tool.py  # Stub for DB execution
-│   ├── knowledge_tool.py # Stub for few-shot retrieval
-│   └── messaging_tool.py # Stub for notifications
+│   ├── database_tool.py  # ✅ 数据库查询执行工具（已实现）
+│   ├── knowledge_tool.py # 知识库检索工具
+│   └── messaging_tool.py # 通知消息工具
 └── api/
     ├── __init__.py
-    └── excel_client.py   # HTTP client for Excel generation
+    └── excel_client.py   # Excel 生成 API 客户端
 ```
 
-## Installation
+## 安装
 
-### Prerequisites
+### 前置条件
 
 - Python 3.10+
-- Access to an OpenAI-compatible LLM API
-- (Optional) GAUSS DB access for SQL execution
-- (Optional) Knowledge base API access
+- 可访问 OpenAI 兼容的 LLM API
+- （可选）GAUSS DB 访问权限用于 SQL 执行
+- （可选）知识库 API 访问权限
 
-### Install Dependencies
+### 安装依赖
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Or using poetry:
+或使用 poetry：
 
 ```bash
 poetry install
 ```
 
-## Configuration
+## 配置
 
-Copy the example environment file and configure:
+复制环境配置示例文件：
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` with your settings:
+编辑 `.env` 配置你的设置：
 
 ```bash
-# LLM Configuration
+# LLM 配置
 LLM_PROVIDER=openai_api_compatible
 LLM_MODEL=privacy_Qwen3-Coder-480B-A35B-ReAct
 LLM_API_KEY=your-api-key
 LLM_API_BASE=http://localhost:8000/v1
 LLM_TEMPERATURE=0
 
-# Database Configuration
+# 数据库配置
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=gaussdb
 DB_USER=admin
 DB_PASSWORD=
 
-# Knowledge Base
+# 知识库
 KNOWLEDGE_BASE_ID=your-kb-id
 KNOWLEDGE_TOP_K=3
 
-# Excel Generation API
+# Excel 生成 API
 EXCEL_API_URL=http://10.31.169.36:9002/generate_excel
 
-# Notifications
+# 通知
 NOTIFICATION_ENABLED=true
 ```
 
-## Usage
+## 使用
 
-### Command Line
+### 命令行
 
 ```bash
-# Basic usage
+# 基本用法
 python main.py --query "生成测试用例" \
     --mapping mapping.md \
     --rs requirement.md \
     --ts technical.md \
     --w3-id q00797588
 
-# With verbose logging
+# 详细日志模式
 python main.py --query "帮我生成测试用例" \
     --mapping ./docs/mapping.md \
     --rs ./docs/rs.md \
@@ -148,14 +148,14 @@ python main.py --query "帮我生成测试用例" \
     --verbose
 ```
 
-### Programmatic Usage
+### 编程用法
 
 ```python
 from config import Config
 from graph import create_graph
 from langchain_openai import ChatOpenAI
 
-# Setup
+# 设置
 config = Config.from_env()
 llm = ChatOpenAI(
     model=config.llm_model,
@@ -163,10 +163,10 @@ llm = ChatOpenAI(
     base_url=config.llm_api_base,
 )
 
-# Create graph
+# 创建图
 graph = create_graph(config=config, llm=llm)
 
-# Prepare input
+# 准备输入
 input_state = {
     "query": "生成测试用例",
     "files": [
@@ -175,121 +175,148 @@ input_state = {
             "filename": "mapping.md",
             "content": "...",
         },
-        # ... more files
+        # ... 更多文件
     ],
     "w3_id": "q00797588",
 }
 
-# Run
+# 运行
 result = graph.invoke(input_state)
 print(result["llm_response"])
 ```
 
-## External API Stubs
+## 工具实现状态
 
-The following Python implementations are provided as **stubs** and need to be implemented:
+### 1. DatabaseTool (`tools/database_tool.py`) ✅
 
-### 1. Database Tool (`tools/database_tool.py`)
+**已实现** - 完整的数据库查询执行工具
 
+功能特性：
+- ✅ SQL 安全验证（仅允许 SELECT 查询）
+- ✅ 自动添加 LIMIT 限制（防止返回过多数据）
+- ✅ 语句超时控制（默认 30 秒）
+- ✅ 连接池管理（psycopg-pool）
+- ✅ 查询表/列信息辅助方法
+- ✅ 上下文管理器支持
+
+核心方法：
 ```python
-# TODO: Implement actual GAUSS DB connection
 class DatabaseTool:
     def execute_query(self, query_sql: str) -> QueryResult:
-        # Implement actual database query execution
-        pass
+        """执行 SQL 查询，返回 QueryResult"""
+        
+    def query_tables(self, schema: str = None) -> list[str]:
+        """查询表列表"""
+        
+    def query_columns(self, table_name: str, schema: str = None) -> list[dict]:
+        """查询列信息"""
+        
+    def get_sample_data(self, table_name: str, limit: int = 10) -> list[dict]:
+        """获取示例数据"""
 ```
 
-### 2. Knowledge Tool (`tools/knowledge_tool.py`)
+与 LangGraph 节点交互：
+- `sql_generator_node` 调用 `db_tool.execute_query()` 执行验证 SQL
+- 返回 `QueryResult(success, data, error, row_count)`
+- 执行结果存入 `state["test_case"]` 的 `db_excute_result` 字段
+
+### 2. KnowledgeTool (`tools/knowledge_tool.py`)
+
+**待实现** - 知识库检索工具
 
 ```python
-# TODO: Implement actual knowledge base API integration
+# TODO: 实现实际的知识库 API 集成
 class KnowledgeTool:
     def search(self, query: str, test_case_name: str) -> KnowledgeResult:
-        # Implement actual knowledge base search
+        # 实现知识库搜索
         pass
 ```
 
-### 3. Messaging Tool (`tools/messaging_tool.py`)
+### 3. MessagingTool (`tools/messaging_tool.py`)
+
+**待实现** - 消息通知工具
 
 ```python
-# TODO: Implement actual WeLink/SMTP integration
+# TODO: 实现 WeLink/SMTP 集成
 class MessagingTool:
     def send_welink(self, receiver: str, content: str) -> MessageResult:
-        # Implement actual WeLink API call
+        # 实现 WeLink API 调用
         pass
 ```
 
-### 4. Excel Client (`api/excel_client.py`)
+### 4. ExcelClient (`api/excel_client.py`)
+
+**待实现** - Excel 生成客户端
 
 ```python
-# TODO: Implement actual Excel generation API or use library
+# TODO: 实现 Excel 生成 API 或使用库
 class ExcelClient:
     def generate_excel(self, test_cases: list) -> ExcelGenerationResult:
-        # Implement actual Excel file generation
+        # 实现 Excel 文件生成
         pass
 ```
 
-## Migration Notes
+## 迁移说明
 
-This project is migrated from a Dify chatflow export (`ai4test.yml`). Key differences:
+本项目从 Dify chatflow 导出文件 (`ai4test.yml`) 迁移而来。关键概念对照：
 
-| Dify Concept | LangGraph Equivalent |
-|--------------|---------------------|
+| Dify 概念 | LangGraph 等价物 |
+|-----------|-----------------|
 | Workflow nodes | Graph nodes |
 | Conversation variables | State TypedDict |
-| Iteration | Subgraph or loop |
-| Agent (ReAct) | LangChain Agent with tools |
+| Iteration | Subgraph 或 loop |
+| Agent (ReAct) | LangChain Agent + tools |
 | Knowledge retrieval | Custom tool |
 | HTTP Request | httpx client |
 | Code nodes | Python functions |
 
-## State Management
+## 状态管理
 
-The graph uses a unified `GraphState` that combines:
+图使用统一的 `GraphState`，组合了：
 
-- `InputState`: User input (query, files, w3_id)
-- `ConversationState`: Persistent conversation variables
-- `ProcessingState`: Temporary processing results
-- `IntentState`: Classification results
-- Plus additional state for messages and responses
+- `InputState`: 用户输入（query, files, w3_id）
+- `ConversationState`: 持久化对话变量
+- `ProcessingState`: 临时处理结果
+- `IntentState`: 分类结果
+- 额外的消息和响应状态
 
-## Testing
+## 测试
 
 ```bash
-# Run tests
-pytest tests/
+# 运行测试
+pytest test_database_tool.py -v
 
-# With coverage
-pytest --cov=ai4test_langgraph tests/
+# 带覆盖率
+pytest --cov=langgraph_test tests/
 ```
 
-## Development
+## 开发
 
-### Code Style
+### 代码风格
 
 ```bash
-# Format code
+# 格式化代码
 black .
 
-# Lint code
+# 代码检查
 ruff check .
 
-# Type checking
+# 类型检查
 mypy .
 ```
 
-## License
+## 许可证
 
 MIT
 
-## Contributing
+## 贡献
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests
-5. Submit a pull request
+1. Fork 仓库
+2. 创建功能分支
+3. 提交更改
+4. 运行测试
+5. 提交 Pull Request
 
-## Contact
+## 联系方式
 
-For questions or issues, please open an issue on GitHub.
+如有问题或建议，请在 GitHub 上提交 issue。

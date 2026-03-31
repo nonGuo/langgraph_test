@@ -47,6 +47,11 @@ class Config:
     db_user: str = os.getenv("DB_USER", "admin")
     db_password: str = os.getenv("DB_PASSWORD", "")
     
+    # Database Advanced Configuration
+    db_pool_size: int = int(os.getenv("DB_POOL_SIZE", "5"))
+    db_statement_timeout: int = int(os.getenv("DB_STATEMENT_TIMEOUT", "30"))
+    db_max_rows: int = int(os.getenv("DB_MAX_ROWS", "1000"))
+    
     # Excel Generation API
     excel_api_url: str = os.getenv("EXCEL_API_URL", "http://10.31.169.36:9002/generate_excel")
     excel_api_timeout: int = int(os.getenv("EXCEL_API_TIMEOUT", "300"))
