@@ -59,6 +59,9 @@ class Config:
     # Excel 本地生成配置
     excel_output_dir: str = os.getenv("EXCEL_OUTPUT_DIR", "./excel_output")
     excel_filename_prefix: str = os.getenv("EXCEL_FILENAME_PREFIX", "测试用例_")
+
+    # XMind 脑图输出配置
+    xmind_output_dir: str = os.getenv("XMIND_OUTPUT_DIR", "./xmind_output")
     
     # Notification Configuration
     notification_enabled: bool = os.getenv("NOTIFICATION_ENABLED", "true").lower() == "true"

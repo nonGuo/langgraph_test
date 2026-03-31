@@ -158,11 +158,13 @@ class KnowledgeRetrievalState(TypedDict):
 class ExcelGenerationState(TypedDict):
     """
     State for Excel generation API response.
-    
+
     Attributes:
         body: Excel file content or URL
+        xmind_file: XMind mind map file path
     """
     body: str
+    xmind_file: str
 
 
 # Combined state for the main graph

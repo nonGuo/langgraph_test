@@ -12,6 +12,7 @@
 - 📝 **创建测试用例**：将思维导图转换为结构化的 JSON 测试用例
 - 💾 **生成 SQL**：使用 ReAct Agent 为每个测试用例生成验证 SQL
 - 📊 **导出 Excel**：生成格式化的 Excel 文件
+- 🧠 **导出 XMind**：将 Mermaid 脑图转换为 XMind 格式文件
 - 🔔 **发送通知**：通过 WeLink 通知用户完成状态
 
 ## 架构
@@ -308,6 +309,49 @@ class ExcelClient:
 - `send_notification_node` 调用 `excel_client.generate_excel_sync()` 生成 Excel
 - 返回 `ExcelGenerationResult(success, file_path, file_content, row_count)`
 - 文件路径存入 `state["body"]` 用于通知消息
+
+### 5. Mermaid 到 XMind 转换 (`mermaid_to_xmind.py`)
+
+**已实现** - Mermaid 脑图转 XMind 格式工具
+
+功能特性：
+- ✅ 解析 Mermaid `graph LR` 格式
+- ✅ 支持节点定义和父子关系
+- ✅ 生成标准 XMind 格式（zip 包，包含 content.json 和 metadata.json）
+- ✅ 自动提取和转换多层级节点结构
+- ✅ 支持 HTML 换行符 (`<br/>`) 转换
+
+使用方法：
+```python
+from mermaid_to_xmind import mermaid_to_xmind, generate_xmind_file
+
+# 方法 1: 直接生成文件
+success = mermaid_to_xmind(mermaid_text, "output.xmind")
+
+# 方法 2: 获取详细结果
+result = generate_xmind_file(mermaid_text, "output.xmind")
+# result = {"success": True, "file_path": "...", "node_count": 12}
+
+# 方法 3: 生成字节流
+success, file_bytes, error = generate_xmind_to_bytes(mermaid_text)
+```
+
+Mermaid 格式示例：
+```mermaid
+graph LR
+    root("根节点")
+    L1_1("一级节点 1")
+    L1_2("一级节点 2")
+    root --> L1_1
+    root --> L1_2
+    L3_1_1("叶子节点")
+    L1_1 --> L3_1_1
+```
+
+与 LangGraph 节点交互：
+- `send_notification_node` 调用 `generate_xmind_file()` 生成 XMind
+- 从 `state["test_case_naotu"]` 获取 Mermaid 脑图
+- 文件路径存入 `state["xmind_file"]`
 
 ## 迁移说明
 

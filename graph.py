@@ -172,7 +172,10 @@ class AI4TestGraph:
         builder.add_node(
             "send_notification",
             lambda state: send_notification_node(
-                state, self.excel_client, self.messaging_tool
+                state,
+                self.excel_client,
+                self.messaging_tool,
+                xmind_output_dir=self.config.xmind_output_dir,
             ),
         )
     
