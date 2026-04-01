@@ -350,7 +350,7 @@ def create_graph(
     )
     
     knowledge_tool = kwargs.get("knowledge_tool") or KnowledgeTool(
-        knowledge_base_id=config.knowledge_base_id,
+        collection_name=config.knowledge_base_id,
         top_k=config.top_k,
         score_threshold=config.score_threshold,
     )

@@ -31,17 +31,35 @@ logger = logging.getLogger(__name__)
 def load_file_content(file_path: str) -> str:
     """
     Load content from a file.
-    
+
+    Supports:
+    - Text files (.md, .txt, .sql, etc.): read directly
+    - Excel files (.xlsx, .xls): convert to Markdown tables
+    - Word files (.docx): convert to Markdown with structure
+
     Args:
         file_path: Path to file
-        
+
     Returns:
-        File content as string
+        File content as string (Markdown format for Excel/DOCX)
     """
     path = Path(file_path)
     if not path.exists():
         raise FileNotFoundError(f"File not found: {file_path}")
-    
+
+    # Check if it's an Excel file
+    if path.suffix.lower() in ['.xlsx', '.xls']:
+        logger.info(f"Detected Excel file: {file_path}, converting to Markdown...")
+        from tools.excel_converter import convert_excel_to_markdown
+        return convert_excel_to_markdown(file_path)
+
+    # Check if it's a Word document
+    if path.suffix.lower() == '.docx':
+        logger.info(f"Detected DOCX file: {file_path}, converting to Markdown...")
+        from tools.docx_converter import convert_docx_to_markdown
+        return convert_docx_to_markdown(file_path)
+
+    # Read text file directly
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 

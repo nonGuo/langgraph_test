@@ -149,6 +149,12 @@ python main.py --query "帮我生成测试用例" \
     --verbose
 ```
 
+**支持的文件格式：**
+- **Mapping 文件**: `.md` (Markdown), `.xlsx` (Excel), `.xls` (Excel 97-2003)
+- **RS/TS 文件**: `.md` (Markdown), `.txt` (文本), `.docx` (Word)
+
+Excel 文件会自动转换为 Markdown 表格格式，Word 文档会自动转换为 Markdown 格式（保留标题层级和表格）。
+
 ### 编程用法
 
 ```python
