@@ -30,6 +30,7 @@ def sql_generator_node(
     config: Config = None,
     db_tool: Any = None,
     knowledge_tool: Any = None,
+    user_feedback: str = None,
 ) -> GraphState:
     """
     Generate and execute SQL for test cases using ReAct Agent.
@@ -56,6 +57,7 @@ def sql_generator_node(
         config: Configuration object
         db_tool: Database execution tool
         knowledge_tool: Knowledge base retrieval tool
+        user_feedback: Optional user feedback for SQL modification
 
     Returns:
         Updated state with processed test cases
@@ -315,3 +317,47 @@ def _generate_summary(processed_cases: list[dict[str, Any]]) -> str:
     ]
 
     return "\n".join(summary_lines)
+
+
+def regenerate_sql_node(
+    state: GraphState,
+    llm: BaseChatModel,
+    config: Any = None,
+    db_tool: Any = None,
+    knowledge_tool: Any = None,
+) -> GraphState:
+    """
+    根据用户反馈重新生成 SQL.
+
+    该节点接收用户的修改意见，重新生成测试用例的 SQL.
+
+    Args:
+        state: 当前图状态
+        llm: 语言模型
+        config: 配置对象
+        db_tool: 数据库工具
+        knowledge_tool: 知识库工具
+
+    Returns:
+        更新后的状态
+    """
+    user_feedback = state.get("query", "")
+    test_case_json = state.get("test_case", "[]")
+
+    logger.info(f"根据用户反馈重新生成 SQL: {user_feedback[:100]}...")
+
+    try:
+        test_cases = json_lib.loads(test_case_json)
+    except Exception:
+        test_cases = []
+
+    # 调用 sql_generator_node 的逻辑重新处理
+    # 复用原有函数，传入用户反馈
+    return sql_generator_node(
+        state=state,
+        llm=llm,
+        config=config,
+        db_tool=db_tool,
+        knowledge_tool=knowledge_tool,
+        user_feedback=user_feedback,
+    )

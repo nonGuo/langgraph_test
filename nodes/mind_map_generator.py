@@ -390,6 +390,147 @@ def _format_user_confirmation(mind_map: str, thinking: str) -> str:
 """
 
 
+def regenerate_mind_map_node(
+    state: GraphState,
+    llm: BaseChatModel,
+    messaging_tool: Any = None,
+    max_iterations: int = 3,
+) -> GraphState:
+    """
+    根据用户反馈重新生成测试用例脑图.
+
+    该节点接收用户的修改意见，结合原有脑图重新生成.
+
+    Args:
+        state: 当前图状态
+        llm: 语言模型
+        messaging_tool: 消息发送工具
+        max_iterations: 最大 ReAct 迭代次数
+
+    Returns:
+        更新后的状态，包含 test_case_naotu
+    """
+    # 获取原有脑图和用户修改意见
+    existing_mind_map = state.get("test_case_naotu", "")
+    user_feedback = state.get("query", "")
+
+    logger.info(f"根据用户反馈重新生成脑图：{user_feedback[:100]}...")
+
+    # 收集上下文信息
+    table_1 = state.get("mapping_table1", "")
+    table_2 = state.get("mapping_table2", "")
+    ts_info = state.get("ts_info", {})
+    knowledge_result = state.get("result", "")
+    rs_points = state.get("RS", "")
+    w3_id = state.get("user_w3_id", "")
+
+    # 构建系统提示词（包含用户反馈）
+    system_prompt = f"""
+# Role
+你是一名资深的数据仓库测试专家，擅长根据用户的反馈修改测试用例脑图。
+
+# Task
+根据用户的反馈意见，修改原有的测试用例脑图。
+
+# User Feedback
+用户要求：{user_feedback}
+
+# Existing Mind Map
+{existing_mind_map}
+
+# Context
+## Mapping 文档（表级）:
+{table_1[:2000] if table_1 else "无"}
+
+## Mapping 文档（字段级）:
+{table_2[:2000] if table_2 else "无"}
+
+## 测试要点 (RS):
+{rs_points[:1000] if rs_points else "无"}
+
+# Requirements
+1. 保留原有脑图中用户未要求修改的部分
+2. 根据用户反馈进行精准的修改
+3. 确保修改后的脑图仍然符合 mermaid 语法
+4. 修改后测试用例不超过 20 个
+
+# Output Format
+当你完成修改后，输出最终答案：
+
+Final Answer
+```json
+{{
+  "mind_map": "mermaid 格式的脑图",
+  "explanation": "修改说明"
+}}
+```
+"""
+
+    # 创建工具列表
+    from langchain_core.tools import BaseTool
+    tools: list[BaseTool] = []
+
+    if messaging_tool:
+        send_msg_tool = create_send_msg_tool(messaging_tool)
+        if send_msg_tool:
+            tools.append(send_msg_tool)
+
+    # 构建输入数据
+    input_data = {
+        "existing_mind_map": existing_mind_map,
+        "user_feedback": user_feedback,
+        "table_1": table_1,
+        "table_2": table_2,
+        "ts_info": ts_info,
+        "knowledge_result": knowledge_result,
+        "rs_points": rs_points,
+        "w3_id": w3_id,
+    }
+
+    # 运行 ReAct Agent
+    try:
+        agent_result = run_react_agent(
+            input_data=input_data,
+            llm=llm,
+            tools=tools,
+            system_prompt=system_prompt,
+            max_iterations=max_iterations,
+            user_message=f"请根据我的反馈修改脑图：{user_feedback}",
+            parse_result_fn=parse_mind_map_result,
+        )
+
+        # 提取结果
+        mind_map = agent_result.get("final_result", "")
+        agent_thinking = agent_result.get("agent_thinking", "")
+        success = agent_result.get("success", False)
+        error = agent_result.get("error")
+
+        if not mind_map:
+            logger.warning("Agent 未生成有效的脑图")
+            return {
+                **state,
+                "llm_response": f"重新生成脑图失败：{error or '未知错误'}",
+            }
+
+        logger.info(f"脑图重新生成成功：{len(mind_map)} 字符")
+
+        # 格式化用户确认消息
+        confirmation_message = _format_user_confirmation(mind_map, agent_thinking)
+
+        return {
+            **state,
+            "test_case_naotu": mind_map,
+            "llm_response": confirmation_message,
+        }
+
+    except Exception as e:
+        logger.exception(f"脑图重新生成失败：{e}")
+        return {
+            **state,
+            "llm_response": f"重新生成测试用例脑图失败：{str(e)}",
+        }
+
+
 # ============================================================================
 # 路由函数 (用于条件边)
 # ============================================================================

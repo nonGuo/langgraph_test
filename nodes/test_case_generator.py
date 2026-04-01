@@ -405,3 +405,105 @@ def extract_test_case_fields(test_case: dict[str, Any]) -> TestCaseItem:
         "agent_thinking": None,
         "db_excute_result": None,
     }
+
+
+def regenerate_test_cases_node(
+    state: GraphState,
+    llm: BaseChatModel,
+    max_iterations: int = 3,
+) -> GraphState:
+    """
+    根据用户反馈重新生成测试用例.
+
+    该节点接收用户的修改意见，结合原有测试用例重新生成.
+
+    Args:
+        state: 当前图状态
+        llm: 语言模型
+        max_iterations: 最大 ReAct 迭代次数
+
+    Returns:
+        更新后的状态，包含 test_case
+    """
+    # 获取原有测试用例和用户修改意见
+    existing_test_cases_json = state.get("test_case", "")
+    user_feedback = state.get("query", "")
+    mind_map = state.get("test_case_naotu", "")
+
+    logger.info(f"根据用户反馈重新生成测试用例：{user_feedback[:100]}...")
+
+    try:
+        existing_test_cases = json_lib.loads(existing_test_cases_json)
+    except Exception:
+        existing_test_cases = []
+
+    # 构建系统提示词（包含用户反馈）
+    system_prompt = TEST_CASE_AGENT_PROMPT.format(
+        mind_map=mind_map[:3000] if mind_map else "无",
+        user_query=f"{user_feedback}\n\n原有测试用例:\n{json_lib.dumps(existing_test_cases, ensure_ascii=False)}",
+    )
+
+    # 构建输入数据
+    input_data = {
+        "mind_map": mind_map,
+        "user_query": user_feedback,
+        "existing_test_cases": existing_test_cases,
+    }
+
+    # 运行 ReAct Agent
+    try:
+        agent_result = run_react_agent(
+            input_data=input_data,
+            llm=llm,
+            tools=[],  # 不需要外部工具
+            system_prompt=system_prompt,
+            max_iterations=max_iterations,
+            user_message=f"请根据我的反馈修改测试用例：{user_feedback}",
+            parse_result_fn=parse_test_cases_result,
+        )
+
+        # 提取结果
+        test_cases_json = agent_result.get("final_result", "")
+        agent_thinking = agent_result.get("agent_thinking", "")
+        success = agent_result.get("success", False)
+        error = agent_result.get("error")
+
+        if not test_cases_json:
+            logger.warning("Agent 未生成有效的测试用例")
+            return {
+                **state,
+                "llm_response": f"重新生成测试用例失败：{error or '未知错误'}",
+            }
+
+        # 解析 JSON 用于格式化
+        try:
+            test_cases = json_lib.loads(test_cases_json)
+        except json_lib.JSONDecodeError:
+            logger.error("无法解析生成的测试用例 JSON")
+            return {
+                **state,
+                "llm_response": f"测试用例格式错误：无法解析 JSON",
+            }
+
+        logger.info(f"测试用例重新生成成功：{len(test_cases)} 个用例")
+
+        # 格式化为 Markdown 表格
+        md_output = _format_test_cases_markdown(test_cases)
+
+        # 生成确认消息
+        confirmation_message = _format_confirmation_message(md_output, len(test_cases), agent_thinking)
+
+        return {
+            **state,
+            "test_case": test_cases_json,
+            "new_test_case": test_cases_json,
+            "md_output": md_output,
+            "llm_response": confirmation_message,
+        }
+
+    except Exception as e:
+        logger.exception(f"测试用例重新生成失败：{e}")
+        return {
+            **state,
+            "llm_response": f"重新生成测试用例失败：{str(e)}",
+        }

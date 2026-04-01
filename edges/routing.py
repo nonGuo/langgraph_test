@@ -66,44 +66,136 @@ def test_points_extraction_router(state: GraphState) -> str:
 def mind_map_confirm_router(state: GraphState) -> str:
     """
     Route based on user confirmation of mind map.
-    
+
     Checks user query for confirmation or modification keywords.
-    
+
     Args:
         state: Current graph state
-        
+
     Returns:
         Next node name
     """
     query = state.get("query", "").lower()
     test_case_naotu = state.get("test_case_naotu", "")
-    
+
     # If no mind map exists, can't confirm
     if not test_case_naotu:
         logger.info("No mind map to confirm")
         return "generate_mind_map"
-    
+
     # Keywords indicating confirmation
     confirm_keywords = [
         "确认", "正确", "没问题", "可以", "继续", "生成用例",
         "confirm", "correct", "yes", "continue", "ok"
     ]
-    
+
     # Keywords indicating modification request
     modify_keywords = [
         "修改", "不对", "错误", "增加", "删除", "调整", "改变",
         "modify", "change", "wrong", "add", "remove", "update"
     ]
-    
+
     for keyword in confirm_keywords:
         if keyword in query:
             logger.info("User confirmed mind map")
             return "confirm_mindmap"
-    
+
     for keyword in modify_keywords:
         logger.info("User requested mind map modification")
         return "modify_mindmap"
-    
+
+    # Default to waiting for confirmation
+    logger.info("User response unclear, waiting for confirmation")
+    return "await_confirmation"
+
+
+def test_case_confirm_router(state: GraphState) -> str:
+    """
+    Route based on user confirmation of test cases.
+
+    Checks user query for confirmation or modification keywords.
+
+    Args:
+        state: Current graph state
+
+    Returns:
+        Next node name
+    """
+    query = state.get("query", "").lower()
+    test_case = state.get("test_case", "")
+
+    # If no test cases exist, can't confirm
+    if not test_case:
+        logger.info("No test cases to confirm")
+        return "generate_test_cases"
+
+    # Keywords indicating confirmation
+    confirm_keywords = [
+        "确认", "正确", "没问题", "可以", "继续", "生成 sql",
+        "confirm", "correct", "yes", "continue", "ok"
+    ]
+
+    # Keywords indicating modification request
+    modify_keywords = [
+        "修改", "不对", "错误", "增加", "删除", "调整", "改变",
+        "modify", "change", "wrong", "add", "remove", "update"
+    ]
+
+    for keyword in confirm_keywords:
+        if keyword in query:
+            logger.info("User confirmed test cases")
+            return "confirm_test_cases"
+
+    for keyword in modify_keywords:
+        logger.info("User requested test case modification")
+        return "modify_test_cases"
+
+    # Default to waiting for confirmation
+    logger.info("User response unclear, waiting for confirmation")
+    return "await_confirmation"
+
+
+def sql_confirm_router(state: GraphState) -> str:
+    """
+    Route based on user confirmation of SQL generation.
+
+    Checks user query for confirmation or modification keywords.
+
+    Args:
+        state: Current graph state
+
+    Returns:
+        Next node name
+    """
+    query = state.get("query", "").lower()
+    test_case = state.get("test_case", "")
+
+    # If no test cases exist, skip SQL confirmation
+    if not test_case:
+        logger.info("No test cases for SQL confirmation")
+        return "confirm_sql"
+
+    # Keywords indicating confirmation
+    confirm_keywords = [
+        "确认", "正确", "没问题", "可以", "继续", "发送通知", "完成",
+        "confirm", "correct", "yes", "continue", "ok", "finish"
+    ]
+
+    # Keywords indicating modification request
+    modify_keywords = [
+        "修改", "不对", "错误", "增加", "删除", "调整", "改变",
+        "modify", "change", "wrong", "add", "remove", "update"
+    ]
+
+    for keyword in confirm_keywords:
+        if keyword in query:
+            logger.info("User confirmed SQL generation")
+            return "confirm_sql"
+
+    for keyword in modify_keywords:
+        logger.info("User requested SQL modification")
+        return "modify_sql"
+
     # Default to waiting for confirmation
     logger.info("User response unclear, waiting for confirmation")
     return "await_confirmation"

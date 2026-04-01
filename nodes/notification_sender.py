@@ -18,6 +18,7 @@ def send_notification_node(
     excel_client: Any = None,
     messaging_tool: Any = None,
     xmind_output_dir: str = "./xmind_output",
+    enable_xmind: bool = True,
 ) -> GraphState:
     """
     Send task completion notification with Excel and XMind files.
@@ -32,6 +33,7 @@ def send_notification_node(
         excel_client: Excel generation API client
         messaging_tool: Messaging tool for notifications
         xmind_output_dir: XMind output directory
+        enable_xmind: Whether to generate XMind file
 
     Returns:
         Updated state with notification status
@@ -79,35 +81,38 @@ def send_notification_node(
     else:
         excel_result = "Excel 文件已生成（模拟）"
 
-    # Generate XMind from mind map (if available)
+    # Generate XMind from mind map (if available and enabled)
     xmind_result = ""
-    mind_map = state.get("test_case_naotu", "")
-    if mind_map:
-        try:
-            from mermaid_to_xmind import generate_xmind_file
-            import os
+    if enable_xmind:
+        mind_map = state.get("test_case_naotu", "")
+        if mind_map:
+            try:
+                from mermaid_to_xmind import generate_xmind_file
+                import os
 
-            # Ensure output directory exists
-            os.makedirs(xmind_output_dir, exist_ok=True)
+                # Ensure output directory exists
+                os.makedirs(xmind_output_dir, exist_ok=True)
 
-            # Generate filename
-            from datetime import datetime
-            filename = f"测试用例脑图_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xmind"
-            xmind_path = os.path.join(xmind_output_dir, filename)
+                # Generate filename
+                from datetime import datetime
+                filename = f"测试用例脑图_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xmind"
+                xmind_path = os.path.join(xmind_output_dir, filename)
 
-            # Generate XMind file
-            result = generate_xmind_file(mind_map, xmind_path)
-            if result.get("success"):
-                xmind_result = xmind_path
-                logger.info(f"XMind 文件已生成：{xmind_path}, 节点数：{result.get('node_count', 0)}")
-            else:
-                logger.error(f"XMind generation failed: {result.get('error')}")
-                xmind_result = f"脑图生成失败：{result.get('error')}"
-        except Exception as e:
-            logger.exception("XMind generation exception")
-            xmind_result = f"脑图生成异常：{str(e)}"
+                # Generate XMind file
+                result = generate_xmind_file(mind_map, xmind_path)
+                if result.get("success"):
+                    xmind_result = xmind_path
+                    logger.info(f"XMind 文件已生成：{xmind_path}, 节点数：{result.get('node_count', 0)}")
+                else:
+                    logger.error(f"XMind generation failed: {result.get('error')}")
+                    xmind_result = f"脑图生成失败：{result.get('error')}"
+            except Exception as e:
+                logger.exception("XMind generation exception")
+                xmind_result = f"脑图生成异常：{str(e)}"
+        else:
+            xmind_result = "未生成脑图文件"
     else:
-        xmind_result = "未生成脑图文件"
+        xmind_result = "已禁用 XMind 生成"
 
     # Send notification (if tool provided)
     notification_sent = False

@@ -16,8 +16,12 @@ faiss-cpu>=1.7.0
 sentence-transformers>=2.2.0
 pypdf>=3.0.0
 
-# Excel 生成
+# Excel 读写
 openpyxl>=3.1.0
+xlrd>=2.0.0
+
+# Word 文档转换
+python-docx>=1.0.0
 
 # XMind 脑图导出
 xmind>=1.2.0

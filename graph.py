@@ -10,6 +10,7 @@ from typing import Any
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
 from langchain_core.language_models import BaseChatModel
+from langgraph.checkpoint.memory import MemorySaver
 
 from state import GraphState
 from config import Config
@@ -20,9 +21,9 @@ logger = logging.getLogger(__name__)
 class AI4TestGraph:
     """
     AI4Test LangGraph workflow.
-    
+
     This class encapsulates the complete graph workflow migrated from Dify.
-    
+
     Main workflow branches:
     1. Intent Classification -> Route to appropriate branch
     2. Document Processing -> Parse Mapping/RS/TS
@@ -32,13 +33,14 @@ class AI4TestGraph:
     6. SQL Generation (Iteration) -> Generate SQL for each test case
     7. Excel Generation -> Create Excel file
     8. Notification -> Send completion message
-    
+
     Attributes:
         config: Configuration object
         llm: Language model instance
         graph: Compiled StateGraph
+        memory: MemorySaver for conversation persistence
     """
-    
+
     def __init__(
         self,
         config: Config,
@@ -47,10 +49,11 @@ class AI4TestGraph:
         knowledge_tool: Any = None,
         messaging_tool: Any = None,
         excel_client: Any = None,
+        use_memory: bool = True,
     ):
         """
         Initialize the graph with configuration and tools.
-        
+
         Args:
             config: Configuration object
             llm: Language model for all LLM calls
@@ -58,6 +61,7 @@ class AI4TestGraph:
             knowledge_tool: Knowledge base retrieval tool
             messaging_tool: Notification messaging tool
             excel_client: Excel generation API client
+            use_memory: Enable conversation memory for multi-turn dialogue
         """
         self.config = config
         self.llm = llm
@@ -65,37 +69,43 @@ class AI4TestGraph:
         self.knowledge_tool = knowledge_tool
         self.messaging_tool = messaging_tool
         self.excel_client = excel_client
-        
+        self.use_memory = use_memory
+
+        self.memory = MemorySaver() if use_memory else None
         self.graph = self._build_graph()
-    
+
     def _build_graph(self) -> StateGraph:
         """
         Build the StateGraph with all nodes and edges.
-        
+
         Returns:
             Compiled StateGraph
         """
         logger.info("Building AI4Test graph...")
-        
+
         # Initialize graph with GraphState
         builder = StateGraph(GraphState)
-        
+
         # Add all nodes
         self._add_nodes(builder)
-        
+
         # Add edges (routing logic)
         self._add_edges(builder)
-        
-        # Compile the graph
-        graph = builder.compile()
-        logger.info("Graph built successfully")
-        
+
+        # Compile the graph with memory if enabled
+        if self.memory:
+            graph = builder.compile(checkpointer=self.memory)
+            logger.info("Graph built successfully with conversation memory")
+        else:
+            graph = builder.compile()
+            logger.info("Graph built successfully (no memory)")
+
         return graph
     
     def _add_nodes(self, builder: StateGraph) -> None:
         """
         Add all nodes to the graph builder.
-        
+
         Args:
             builder: StateGraph builder
         """
@@ -111,27 +121,27 @@ class AI4TestGraph:
             send_notification_node,
         )
         from nodes.notification_sender import send_chat_response_node
-        
+
         # Intent classification
         builder.add_node(
             "intent_classifier",
             lambda state: intent_classifier_node(state, self.llm),
         )
-        
+
         # Document processing branch
         builder.add_node("parse_mapping", parse_mapping_node)
         builder.add_node("parse_rs", parse_rs_node)
         builder.add_node("parse_ts", lambda state: parse_ts_node(state, self.llm))
-        
+
         # Test points extraction
         builder.add_node(
             "extract_test_points",
             lambda state: extract_test_points_node(state, self.llm),
         )
-        
+
         # Knowledge retrieval
         builder.add_node("retrieve_knowledge", self._retrieve_knowledge_node)
-        
+
         # Mind map generation (using ReAct Agent)
         builder.add_node(
             "generate_mind_map",
@@ -142,10 +152,21 @@ class AI4TestGraph:
                 max_iterations=self.config.max_sql_iterations if self.config else 3,
             ),
         )
-        
+
+        # Regenerate mind map (based on user feedback)
+        builder.add_node(
+            "regenerate_mind_map",
+            lambda state: regenerate_mind_map_node(
+                state,
+                self.llm,
+                messaging_tool=self.messaging_tool,
+                max_iterations=self.config.max_sql_iterations if self.config else 3,
+            ),
+        )
+
         # Chat/guidance response
         builder.add_node("handle_chat_guidance", send_chat_response_node)
-        
+
         # Test case generation (using ReAct Agent)
         builder.add_node(
             "generate_test_cases",
@@ -155,11 +176,33 @@ class AI4TestGraph:
                 max_iterations=self.config.max_sql_iterations if self.config else 3,
             ),
         )
-        
+
+        # Regenerate test cases (based on user feedback)
+        builder.add_node(
+            "regenerate_test_cases",
+            lambda state: regenerate_test_cases_node(
+                state,
+                self.llm,
+                max_iterations=self.config.max_sql_iterations if self.config else 3,
+            ),
+        )
+
         # SQL generation (using ReAct Agent subgraph)
         builder.add_node(
             "generate_sql",
             lambda state: sql_generator_node(
+                state=state,
+                llm=self.llm,
+                config=self.config,
+                db_tool=self.db_tool,
+                knowledge_tool=self.knowledge_tool,
+            ),
+        )
+
+        # Regenerate SQL (based on user feedback)
+        builder.add_node(
+            "regenerate_sql",
+            lambda state: regenerate_sql_node(
                 state=state,
                 llm=self.llm,
                 config=self.config,
@@ -176,19 +219,23 @@ class AI4TestGraph:
                 self.excel_client,
                 self.messaging_tool,
                 xmind_output_dir=self.config.xmind_output_dir,
+                enable_xmind=False,  # 禁用 XMind 生成
             ),
         )
     
     def _add_edges(self, builder: StateGraph) -> None:
         """
         Add edges and routing logic to the graph builder.
-        
+
         Args:
             builder: StateGraph builder
         """
         from edges.routing import (
             intent_router,
             test_points_extraction_router,
+            mind_map_confirm_router,
+            test_case_confirm_router,
+            sql_confirm_router,
         )
         
         # Entry point
@@ -222,16 +269,49 @@ class AI4TestGraph:
         
         # Knowledge retrieval -> Mind map
         builder.add_edge("retrieve_knowledge", "generate_mind_map")
-        
-        # Mind map -> (user confirmation happens externally)
-        # For now, go directly to test case generation
-        builder.add_edge("generate_mind_map", "generate_test_cases")
-        
-        # Test case generation -> SQL generation
-        builder.add_edge("generate_test_cases", "generate_sql")
-        
-        # SQL generation -> Notification
-        builder.add_edge("generate_sql", "send_notification")
+
+        # Mind map -> User confirmation (conditional edge)
+        builder.add_conditional_edges(
+            "generate_mind_map",
+            mind_map_confirm_router,
+            {
+                "confirm_mindmap": "generate_test_cases",
+                "modify_mindmap": "regenerate_mind_map",
+                "await_confirmation": "handle_chat_guidance",
+                "generate_mind_map": "generate_mind_map",  # No mind map yet
+            },
+        )
+
+        # Regenerate mind map based on user feedback
+        builder.add_edge("regenerate_mind_map", "generate_mind_map")
+
+        # Test case generation -> User confirmation (conditional edge)
+        builder.add_conditional_edges(
+            "generate_test_cases",
+            test_case_confirm_router,
+            {
+                "confirm_test_cases": "generate_sql",
+                "modify_test_cases": "regenerate_test_cases",
+                "await_confirmation": "handle_chat_guidance",
+            },
+        )
+
+        # Regenerate test cases based on user feedback
+        builder.add_edge("regenerate_test_cases", "generate_test_cases")
+
+        # SQL generation -> User confirmation (conditional edge)
+        builder.add_conditional_edges(
+            "generate_sql",
+            sql_confirm_router,
+            {
+                "confirm_sql": "send_notification",
+                "modify_sql": "regenerate_sql",
+                "await_confirmation": "handle_chat_guidance",
+            },
+        )
+
+        # Regenerate SQL based on user feedback
+        builder.add_edge("regenerate_sql", "generate_sql")
         
         # Chat/guidance -> END
         builder.add_edge("handle_chat_guidance", END)
@@ -269,40 +349,46 @@ class AI4TestGraph:
             logger.exception("Knowledge retrieval error")
             return {**state, "result": ""}
     
-    def invoke(self, input_state: dict[str, Any]) -> dict[str, Any]:
+    def invoke(self, input_state: dict[str, Any], thread_id: str = "default") -> dict[str, Any]:
         """
         Invoke the graph with input state.
-        
+
         Args:
             input_state: Initial state dictionary
-            
+            thread_id: Conversation thread ID for multi-turn dialogue
+
         Returns:
             Final state dictionary
         """
-        logger.info(f"Invoking graph with input: {input_state.keys()}")
-        
+        logger.info(f"Invoking graph with input: {input_state.keys()}, thread_id={thread_id}")
+
+        config = {"configurable": {"thread_id": thread_id}} if self.memory else None
+
         try:
-            result = self.graph.invoke(input_state)
+            result = self.graph.invoke(input_state, config=config)
             logger.info("Graph execution completed")
             return result
         except Exception as e:
             logger.exception("Graph execution failed")
             raise
-    
-    def stream(self, input_state: dict[str, Any]):
+
+    def stream(self, input_state: dict[str, Any], thread_id: str = "default"):
         """
         Stream graph execution results.
-        
+
         Args:
             input_state: Initial state dictionary
-            
+            thread_id: Conversation thread ID for multi-turn dialogue
+
         Yields:
             Intermediate state updates
         """
-        logger.info(f"Streaming graph with input: {input_state.keys()}")
-        
+        logger.info(f"Streaming graph with input: {input_state.keys()}, thread_id={thread_id}")
+
+        config = {"configurable": {"thread_id": thread_id}} if self.memory else None
+
         try:
-            for chunk in self.graph.stream(input_state):
+            for chunk in self.graph.stream(input_state, config=config):
                 yield chunk
         except Exception as e:
             logger.exception("Graph streaming failed")
